@@ -1,2 +1,4 @@
-source 'http://rubygems.org'
-gemspec
+source 'https://rubygems.org'
+gem 'rake'
+gem 'gem_publisher'
+gem 'archive-tar-minitar'
