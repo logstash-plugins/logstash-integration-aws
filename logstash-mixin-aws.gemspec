@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name            = 'logstash-mixin-aws'
-  s.version         = '0.1.0'
+  s.version         = '0.1.1'
   s.licenses        = ['Apache License (2.0)']
   s.summary         = "AWS mixins to provide a unified interface for Amazon Webservice"
   s.description     = "AWS mixins to provide a unified interface for Amazon Webservice"
