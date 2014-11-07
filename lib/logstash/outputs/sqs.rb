@@ -33,7 +33,7 @@ require "digest/sha2"
 #
 # Typically, you should setup an IAM policy, create a user and apply the IAM policy to the user.
 # A sample policy is as follows:
-#
+# [source,ruby]
 #      {
 #        "Statement": [
 #          {
@@ -68,14 +68,14 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
   # Name of SQS queue to push messages into. Note that this is just the name of the queue, not the URL or ARN.
   config :queue, :validate => :string, :required => true
 
-  # Set to true if you want send messages to SQS in batches with batch_send
+  # Set to true if you want send messages to SQS in batches with `batch_send`
   # from the amazon sdk
   config :batch, :validate => :boolean, :default => true
 
-  # If batch is set to true, the number of events we queue up for a batch_send.
+  # If `batch` is set to true, the number of events we queue up for a `batch_send`.
   config :batch_events, :validate => :number, :default => 10
 
-  # If batch is set to true, the maximum amount of time between batch_send commands when there are pending events to flush.
+  # If `batch` is set to true, the maximum amount of time between `batch_send` commands when there are pending events to flush.
   config :batch_timeout, :validate => :number, :default => 5
 
   public
