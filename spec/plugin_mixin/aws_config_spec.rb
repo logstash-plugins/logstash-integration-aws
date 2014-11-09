@@ -23,7 +23,7 @@ describe LogStash::PluginMixins::AwsConfig do
   end
 
   it 'should support reading configuration from a yaml file' do
-    settings = { 'aws_credentials_file' => File.join(File.dirname(__FILE__), '..', 'support/aws_credentials_file_sample_test.yml') }
+    settings = { 'aws_credentials_file' => File.join(File.dirname(__FILE__), '..', 'fixtures/aws_credentials_file_sample_test.yml') }
     config = DummyInputAwsConfig.new(settings)
     config.aws_options_hash[:access_key_id].should == '1234'
     config.aws_options_hash[:secret_access_key].should == 'secret'
