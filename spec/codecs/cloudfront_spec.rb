@@ -5,6 +5,18 @@ require "logstash/errors"
 require "stringio"
 require "zlib"
 
+def compress_with_gzip(io)
+  compressed = StringIO.new('', 'r+b')
+
+  gzip = Zlib::GzipWriter.new(compressed)
+  gzip.write(io.read)
+  gzip.finish
+
+  compressed.rewind
+
+  compressed
+end
+
 describe LogStash::Codecs::Cloudfront do
   let!(:uncompressed_cloudfront_log) do
     # Using format from
