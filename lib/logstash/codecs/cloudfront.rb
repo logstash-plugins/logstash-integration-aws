@@ -7,7 +7,6 @@ require "logstash/json"
 class LogStash::Codecs::Cloudfront < LogStash::Codecs::Base
   config_name "cloudfront"
 
-  milestone 3
 
   # The character encoding used in this codec. Examples include "UTF-8" and
   # "CP1252"
