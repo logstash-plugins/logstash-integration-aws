@@ -31,7 +31,6 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   MAX_MESSAGE_SIZE_IN_BYTES       = 32768
 
   config_name "sns"
-  milestone 1
 
   # Message format.  Defaults to plain text.
   config :format, :validate => [ "json", "plain" ], :default => "plain"
