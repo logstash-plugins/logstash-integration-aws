@@ -6,7 +6,6 @@ require 'aws-sdk'
 class DummyInputAwsConfig < LogStash::Inputs::Base
   include LogStash::PluginMixins::AwsConfig
 
-  milestone 1
 
   def aws_service_endpoint(region)
     { :dummy_input_aws_config_region => "#{region}.awswebservice.local" }
