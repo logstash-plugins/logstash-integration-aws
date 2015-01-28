@@ -69,6 +69,12 @@ describe LogStash::PluginMixins::AwsConfig do
         subject[:dummy_input_aws_config_region].should == "us-east-1.awswebservice.local"
       end
     end
+  end
 
+  context 'when we arent providing credentials' do
+    let(:settings) { {} }
+    it 'should always return a hash' do
+      expect(subject).to eq({})  
+    end
   end
 end

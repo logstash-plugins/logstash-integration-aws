@@ -55,6 +55,8 @@ module LogStash::PluginMixins::AwsConfig
 
   public
   def aws_options_hash
+    opts = {}
+
     if @access_key_id.is_a?(NilClass) ^ @secret_access_key.is_a?(NilClass)
       @logger.warn("Likely config error: Only one of access_key_id or secret_access_key was provided but not both.")
     end
