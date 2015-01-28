@@ -74,7 +74,7 @@ describe LogStash::PluginMixins::AwsConfig do
   context 'when we arent providing credentials' do
     let(:settings) { {} }
     it 'should always return a hash' do
-      expect(subject).to eq({})  
+      expect(subject).to eq({ :use_ssl => true, :dummy_input_aws_config_region => "us-east-1.awswebservice.local" })  
     end
   end
 end
