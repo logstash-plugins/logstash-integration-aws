@@ -75,7 +75,7 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
     raise "An SNS ARN required." unless arn
 
     message = Array(event["sns_message"]).first
-    subject = Array(event["sns_subject"]).first || event.source
+    subject = Array(event["sns_subject"]).first || event["host"]
 
     # Ensure message doesn't exceed the maximum size.
     if message
