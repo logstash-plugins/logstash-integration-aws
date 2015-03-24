@@ -19,7 +19,8 @@ module LogStash::PluginMixins::AwsConfig
     # The AWS Region
     config :region, :validate => [US_EAST_1, "us-west-1", "us-west-2", "eu-central-1",
                                   "eu-west-1", "ap-southeast-1", "ap-southeast-2",
-                                  "ap-northeast-1", "sa-east-1", "us-gov-west-1"], :default => US_EAST_1
+                                  "ap-northeast-1", "sa-east-1", "us-gov-west-1",
+                                  "cn-north-1"], :default => US_EAST_1
 
     # This plugin uses the AWS SDK and supports several ways to get credentials, which will be tried in this order...
     # 1. Static configuration, using `access_key_id` and `secret_access_key` params in logstash plugin config
