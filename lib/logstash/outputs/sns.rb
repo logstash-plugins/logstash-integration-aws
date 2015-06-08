@@ -25,7 +25,7 @@ require "logstash/plugin_mixins/aws_config"
 #  `MAX_MESSAGE_SIZE_IN_BYTES`.
 #
 class LogStash::Outputs::Sns < LogStash::Outputs::Base
-  include LogStash::PluginMixins::AwsConfig
+  include LogStash::PluginMixins::AwsConfig::V2
 
   MAX_SUBJECT_SIZE_IN_CHARACTERS  = 100
   MAX_MESSAGE_SIZE_IN_BYTES       = 32768
@@ -47,17 +47,10 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   config :publish_boot_message_arn, :validate => :string
 
   public
-  def aws_service_endpoint(region)
-    return {
-        :sns_endpoint => "sns.#{region}.amazonaws.com"
-    }
-  end
-
-  public
   def register
-    require "aws-sdk"
+    require "aws-sdk-resources"
 
-    @sns = AWS::SNS.new(aws_options_hash)
+    @sns = Aws::SNS::Client.new(aws_options_hash)
 
     # Try to publish a "Logstash booted" message to the ARN provided to
     # cause an error ASAP if the credentials are bad.
@@ -94,7 +87,11 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
     message.split("\n").each { |line| @logger.debug(line) }
 
     # Publish the message.
-    @sns.topics[arn].publish(message, :subject => subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS))
+    @sns.publish({
+      :topic_arn => arn,
+      :subject => subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS),
+      :message => message
+    })
   end
 
   def self.json_message(event)

@@ -21,8 +21,7 @@ Gem::Specification.new do |s|
 
   # Gem dependencies
   s.add_runtime_dependency "logstash-core", '>= 1.4.0', '< 2.0.0'
-  s.add_runtime_dependency 'logstash-mixin-aws'
-  s.add_runtime_dependency 'aws-sdk'
+  s.add_runtime_dependency 'logstash-mixin-aws', '>= 0.1.11'
 
   s.add_development_dependency 'logstash-devutils'
 end
