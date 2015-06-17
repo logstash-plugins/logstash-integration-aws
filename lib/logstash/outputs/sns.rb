@@ -57,41 +57,46 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
     if @publish_boot_message_arn
       @sns.topics[@publish_boot_message_arn].publish("Logstash successfully booted", :subject => "Logstash booted")
     end
+
+    @codec.on_event do |event|
+      arn, subject, message = normalize(event).values_at(:arn, :subject, :message)
+      raise "An SNS ARN required." unless arn
+
+      # Log event.
+      @logger.debug("Sending event to SNS topic [#{arn}] with subject [#{subject}] and message:")
+      message.split("\n").each { |line| @logger.debug(line) }
+
+      # Publish the message.
+      @sns.publish({
+                     :topic_arn => arn,
+                     :subject => subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS),
+                     :message => message
+                   })
+    end
   end
 
   public
   def receive(event)
     return unless output?(event)
 
-    arn     = Array(event["sns"]).first || @arn
+    @codec.encode(event)
+  end
 
-    raise "An SNS ARN required." unless arn
+  # Return a hash of arn, message and subject normalized and truncated.
+  # Will truncate an explicit message to MAX_MESSAGE_SIZE_IN_BYTES if need be
+  def normalize(event)
+    arn     = Array(event["sns"]).first || @arn
 
     message = Array(event["sns_message"]).first
     subject = Array(event["sns_subject"]).first || event["host"]
 
-    # Ensure message doesn't exceed the maximum size.
-    if message
-      # TODO: Utilize `byteslice` in JRuby 1.7: http://jira.codehaus.org/browse/JRUBY-5547
-      message = message.slice(0, MAX_MESSAGE_SIZE_IN_BYTES)
-    else
-      if @format == "plain"
-        message = self.class.format_message(event)
-      else
-        message = self.class.json_message(event)
-      end
-    end
+    message = message.slice(0, MAX_MESSAGE_SIZE_IN_BYTES) if message
 
-    # Log event.
-    @logger.debug("Sending event to SNS topic [#{arn}] with subject [#{subject}] and message:")
-    message.split("\n").each { |line| @logger.debug(line) }
-
-    # Publish the message.
-    @sns.publish({
-      :topic_arn => arn,
-      :subject => subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS),
-      :message => message
-    })
+    {
+      :arn => arn,
+      :message => message,
+      :subject => subject
+    }
   end
 
   def self.json_message(event)
