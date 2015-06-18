@@ -58,20 +58,9 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
       @sns.topics[@publish_boot_message_arn].publish("Logstash successfully booted", :subject => "Logstash booted")
     end
 
-    @codec.on_event do |event|
-      arn, subject, message = normalize(event).values_at(:arn, :subject, :message)
-      raise "An SNS ARN required." unless arn
-
-      # Log event.
-      @logger.debug("Sending event to SNS topic [#{arn}] with subject [#{subject}] and message:")
-      message.split("\n").each { |line| @logger.debug(line) }
-
-      # Publish the message.
-      @sns.publish({
-                     :topic_arn => arn,
-                     :subject => subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS),
-                     :message => message
-                   })
+    @codec.on_event do |event, encoded|
+      #require 'pry'; binding.pry
+      send_sns_message(event_arn(event), event_subject(event), encoded)
     end
   end
 
@@ -79,47 +68,39 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   def receive(event)
     return unless output?(event)
 
-    @codec.encode(event)
-  end
 
-  # Return a hash of arn, message and subject normalized and truncated.
-  # Will truncate an explicit message to MAX_MESSAGE_SIZE_IN_BYTES if need be
-  def normalize(event)
-    arn     = Array(event["sns"]).first || @arn
-
-    message = Array(event["sns_message"]).first
-    subject = Array(event["sns_subject"]).first || event["host"]
-
-    message = message.slice(0, MAX_MESSAGE_SIZE_IN_BYTES) if message
-
-    {
-      :arn => arn,
-      :message => message,
-      :subject => subject
-    }
-  end
-
-  def self.json_message(event)
-    json      = event.to_json
-    json_size = json.bytesize
-
-    # Truncate only the message if the JSON structure is too large.
-    if json_size > MAX_MESSAGE_SIZE_IN_BYTES
-      # TODO: Utilize `byteslice` in JRuby 1.7: http://jira.codehaus.org/browse/JRUBY-5547
-      event["message"] = event["message"].slice(0, (event["message"].bytesize - (json_size - MAX_MESSAGE_SIZE_IN_BYTES)))
+    if (sns_msg = Array(event["sns_message"]).first)
+      send_sns_message(event_arn(event), event_subject(event), sns_msg)
+    else
+      @codec.encode(event)
     end
-
-    event.to_json
   end
 
-  def self.format_message(event)
-    message =  "Date: #{event.timestamp}\n"
-    message << "Source: #{event["source"]}\n"
-    message << "Tags: #{(event["tags"] || []).join(', ')}\n"
-    message << "Fields: #{event.to_hash.inspect}\n"
-    message << "Message: #{event["message"]}"
+  private
+  def send_sns_message(arn, subject, message)
+    raise "An SNS ARN is required." unless arn
 
-    # TODO: Utilize `byteslice` in JRuby 1.7: http://jira.codehaus.org/browse/JRUBY-5547
-    message.slice(0, MAX_MESSAGE_SIZE_IN_BYTES)
+    trunc_subj = subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS)
+    trunc_msg = message.slice(0, MAX_MESSAGE_SIZE_IN_BYTES)
+
+    @logger.debug? && @logger.debug("Sending event to SNS topic [#{arn}] with subject [#{trunc_subj}] and message: #{trunc_msg}")
+
+    @logger.debug? && @logger.debug(sns_message)
+
+    @sns.publish({
+                   :topic_arn => arn,
+                   :subject => trunc_subj,
+                   :message => trunc_msg
+                 })
+  end
+
+  private
+  def event_subject(event)
+    Array(event["sns_subject"]).first || event["host"]
+  end
+
+  private
+  def event_arn(event)
+    Array(event["sns"]).first || @arn
   end
 end
