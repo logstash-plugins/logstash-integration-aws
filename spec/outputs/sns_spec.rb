@@ -7,11 +7,62 @@ require "logstash/plugin_mixins/aws_config"
 require "aws-sdk" # TODO: Why is this not automatically brought in by the aws_config plugin?
 
 describe LogStash::Outputs::Sns do
+  let(:arn) { "arn:aws:sns:us-east-1:999999999:logstash-test-sns-topic" }
+  let(:sns_subject) { "The Plain in Spain" }
+  let(:sns_message) { "That's where the rain falls, plainly." }
+  let(:mock_client) { double("Aws::SNS::Client") }
+  let(:instance) {
+    allow(Aws::SNS::Client).to receive(:new).and_return(mock_client)
+    inst = LogStash::Outputs::Sns.new
+    allow(inst).to receive(:publish_boot_message_arn).and_return(nil)
+    inst.register
+    inst
+  }
+
+  describe "receiving an event" do
+    subject {
+      inst = instance
+      allow(inst).to receive(:send_sns_message).with(any_args)
+      inst.receive(event)
+      inst
+    }
+
+    shared_examples("publishing correctly") do
+      it "should send a message to the correct ARN if the event has 'arn' set" do
+        expect(subject).to have_received(:send_sns_message).with(arn, anything, anything)
+      end
+
+      it "should send the message" do
+        expect(subject).to have_received(:send_sns_message).with(anything, anything, expected_message)
+      end
+
+      it "should send the subject" do
+        expect(subject).to have_received(:send_sns_message).with(anything, sns_subject, anything)
+      end
+    end
+
+    describe "with an explicit message" do
+      let(:expected_message) { sns_message }
+      let(:event) { LogStash::Event.new("sns" => arn, "sns_subject" => sns_subject, "sns_message" => sns_message) }
+      include_examples("publishing correctly")
+    end
+
+    describe "without an explicit message" do
+      # Testing codecs sucks. It'd be nice if codecs had to implement some sort of encode_sync method
+      let(:expected_message) {
+        c = subject.codec.clone
+        result = nil;
+        c.on_event {|event, encoded| result = encoded }
+        c.encode(event)
+        result
+      }
+      let(:event) { LogStash::Event.new("sns" => arn, "sns_subject" => sns_subject) }
+
+      include_examples("publishing correctly")
+    end
+  end
+
   describe "sending an SNS notification" do
-    let(:arn) { "arn:aws:sns:us-east-1:999999999:logstash-test-sns-topic" }
-    let(:sns_subject) { "The Pain in Spain" }
-    let(:sns_message) { "That's where the rain falls, plainly." }
-    let(:mock_client) { double("Aws::SNS::Client") }
     let(:good_publish_args) {
       {
         :topic_arn => arn,
@@ -19,13 +70,7 @@ describe LogStash::Outputs::Sns do
         :message => sns_message
       }
     }
-    subject {
-      allow(Aws::SNS::Client).to receive(:new).and_return(mock_client)
-      instance = LogStash::Outputs::Sns.new
-      allow(instance).to receive(:publish_boot_message_arn).and_return(nil)
-      instance.register
-      instance
-    }
+    subject { instance }
 
     it "should raise an ArgumentError if no arn is provided" do
       expect {
@@ -61,6 +106,6 @@ describe LogStash::Outputs::Sns do
                              }
 
       subject.send(:send_sns_message, arn, long_subject, sns_message)
-    end
+      end
   end
 end
