@@ -52,14 +52,9 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
 
     @sns = Aws::SNS::Client.new(aws_options_hash)
 
-    # Try to publish a "Logstash booted" message to the ARN provided to
-    # cause an error ASAP if the credentials are bad.
-    if @publish_boot_message_arn
-      @sns.topics[@publish_boot_message_arn].publish("Logstash successfully booted", :subject => "Logstash booted")
-    end
+    publish_boot_message_arn()
 
     @codec.on_event do |event, encoded|
-      #require 'pry'; binding.pry
       send_sns_message(event_arn(event), event_subject(event), encoded)
     end
   end
@@ -67,7 +62,6 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   public
   def receive(event)
     return unless output?(event)
-
 
     if (sns_msg = Array(event["sns_message"]).first)
       send_sns_message(event_arn(event), event_subject(event), sns_msg)
@@ -77,15 +71,22 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   end
 
   private
+  def publish_boot_message_arn
+    # Try to publish a "Logstash booted" message to the ARN provided to
+    # cause an error ASAP if the credentials are bad.
+    if @publish_boot_message_arn
+      @sns.topics[@publish_boot_message_arn].publish("Logstash successfully booted", :subject => "Logstash booted")
+    end
+  end
+
+  private
   def send_sns_message(arn, subject, message)
-    raise "An SNS ARN is required." unless arn
+    raise ArgumentError, "An SNS ARN is required." unless arn
 
     trunc_subj = subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS)
     trunc_msg = message.slice(0, MAX_MESSAGE_SIZE_IN_BYTES)
 
     @logger.debug? && @logger.debug("Sending event to SNS topic [#{arn}] with subject [#{trunc_subj}] and message: #{trunc_msg}")
-
-    @logger.debug? && @logger.debug(sns_message)
 
     @sns.publish({
                    :topic_arn => arn,
