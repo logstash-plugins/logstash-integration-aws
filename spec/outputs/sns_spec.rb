@@ -70,6 +70,8 @@ describe LogStash::Outputs::Sns do
         :message => sns_message
       }
     }
+    let(:long_message) { "A" * (LogStash::Outputs::Sns::MAX_MESSAGE_SIZE_IN_BYTES + 1) }
+    let(:long_subject) { "S" * (LogStash::Outputs::Sns::MAX_SUBJECT_SIZE_IN_CHARACTERS + 1) }
     subject { instance }
 
     it "should raise an ArgumentError if no arn is provided" do
@@ -87,10 +89,8 @@ describe LogStash::Outputs::Sns do
       expect(subject).to have_received(:publish_boot_message_arn).once
     end
 
-    # TODO: Write a unicode aware version of this...
     it "should truncate long messages before sending" do
       max_size = LogStash::Outputs::Sns::MAX_MESSAGE_SIZE_IN_BYTES
-      long_message = "A" * (max_size + 1)
       expect(mock_client).to receive(:publish) {|args|
                                expect(args[:message].bytesize).to eql(max_size)
                              }
@@ -100,12 +100,11 @@ describe LogStash::Outputs::Sns do
 
     it "should truncate long subjects before sending" do
       max_size = LogStash::Outputs::Sns::MAX_SUBJECT_SIZE_IN_CHARACTERS
-      long_subject = "A" * (max_size + 1)
       expect(mock_client).to receive(:publish) {|args|
                                expect(args[:subject].bytesize).to eql(max_size)
                              }
 
       subject.send(:send_sns_message, arn, long_subject, sns_message)
-      end
+    end
   end
 end

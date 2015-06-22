@@ -75,13 +75,13 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
     # Try to publish a "Logstash booted" message to the ARN provided to
     # cause an error ASAP if the credentials are bad.
     if @publish_boot_message_arn
-      @sns.topics[@publish_boot_message_arn].publish("Logstash successfully booted", :subject => "Logstash booted")
+      send_sns_message(@publish_boot_message_arn, 'Logstash booted', 'Logstash successfully booted')
     end
   end
 
   private
   def send_sns_message(arn, subject, message)
-    raise ArgumentError, "An SNS ARN is required." unless arn
+    raise ArgumentError, 'An SNS ARN is required.' unless arn
 
     trunc_subj = subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS)
     trunc_msg = message.slice(0, MAX_MESSAGE_SIZE_IN_BYTES)
