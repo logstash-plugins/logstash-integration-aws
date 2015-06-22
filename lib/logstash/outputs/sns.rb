@@ -6,7 +6,7 @@ require "logstash/plugin_mixins/aws_config"
 # SNS output.
 #
 # Send events to Amazon's Simple Notification Service, a hosted pub/sub
-# framework.  It supports subscribers of type email, HTTP/S, SMS, and SQS.
+# framework.  It supports various subscription types, including email, HTTP/S, SMS, and SQS.
 #
 # For further documentation about the service see:
 #
@@ -17,25 +17,23 @@ require "logstash/plugin_mixins/aws_config"
 #  * `sns` - If no ARN is found in the configuration file, this will be used as
 #  the ARN to publish.
 #  * `sns_subject` - The subject line that should be used.
-#  Optional. The "%{host}" will be used if not present and truncated at
-#  `MAX_SUBJECT_SIZE_IN_CHARACTERS`.
-#  * `sns_message` - The message that should be
-#  sent. Optional. The event serialzed as JSON will be used if not present and
+#  Optional. The "%{host}" will be used if `sns_subject` is not present. The subject
+#  will be truncated to 100 characters. If `sns_subject` is set to a non-string value a JSON version of that value will be saved.
+#  * `sns_message` - Optional string of message to be sent. If this is set to a non-string value it will be encoded with the specified `codec`. If this is not set the entire event will be encoded with the codec.
 #  with the @message truncated so that the length of the JSON fits in
-#  `MAX_MESSAGE_SIZE_IN_BYTES`.
+#  `32768` bytes.
 #
 class LogStash::Outputs::Sns < LogStash::Outputs::Base
   include LogStash::PluginMixins::AwsConfig::V2
 
   MAX_SUBJECT_SIZE_IN_CHARACTERS  = 100
   MAX_MESSAGE_SIZE_IN_BYTES       = 32768
+  NO_SUBJECT = "NO SUBJECT"
 
   config_name "sns"
 
-  # Message format.  Defaults to plain text.
-  config :format, :validate => [ "json", "plain" ], :default => "plain"
-
-  # SNS topic ARN.
+  # Optional ARN to send messages to. If you do not set this you must
+  # include the `sns` field in your events to set the ARN on a per-message basis!
   config :arn, :validate => :string
 
   # When an ARN for an SNS topic is specified here, the message
@@ -63,8 +61,12 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   def receive(event)
     return unless output?(event)
 
-    if (sns_msg = Array(event["sns_message"]).first)
-      send_sns_message(event_arn(event), event_subject(event), sns_msg)
+    if (sns_msg = event["sns_message"])
+      if sns_msg.is_a?(String)
+        send_sns_message(event_arn(event), event_subject(event), sns_msg)
+      else
+        @codec.encode(sns_msg)
+      end
     else
       @codec.encode(event)
     end
@@ -97,11 +99,20 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
 
   private
   def event_subject(event)
-    Array(event["sns_subject"]).first || event["host"]
+    sns_subject = event["sns_subject"]
+    if sns_subject.is_a?(String)
+      sns_subject
+    elsif sns_subject
+      LogStash::Json.dump(sns_subject)
+    elsif event["host"]
+      event["host"]
+    else
+      NO_SUBJECT
+    end
   end
 
   private
   def event_arn(event)
-    Array(event["sns"]).first || @arn
+    event["sns"] || @arn
   end
 end

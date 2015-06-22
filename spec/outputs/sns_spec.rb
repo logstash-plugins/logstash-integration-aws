@@ -20,9 +20,13 @@ describe LogStash::Outputs::Sns do
   }
 
   describe "receiving an event" do
+    let(:expected_subject) { double("expected_subject")}
     subject {
       inst = instance
       allow(inst).to receive(:send_sns_message).with(any_args)
+      allow(inst).to receive(:event_subject).
+                       with(any_args).
+                       and_return(expected_subject)
       inst.receive(event)
       inst
     }
@@ -37,13 +41,15 @@ describe LogStash::Outputs::Sns do
       end
 
       it "should send the subject" do
-        expect(subject).to have_received(:send_sns_message).with(anything, sns_subject, anything)
+        expect(subject).to have_received(:send_sns_message).with(anything, expected_subject, anything)
       end
     end
 
     describe "with an explicit message" do
+      let(:expected_subject) { sns_subject }
       let(:expected_message) { sns_message }
-      let(:event) { LogStash::Event.new("sns" => arn, "sns_subject" => sns_subject, "sns_message" => sns_message) }
+      let(:event) { LogStash::Event.new("sns" => arn, "sns_subject" => sns_subject,
+                                        "sns_message" => sns_message) }
       include_examples("publishing correctly")
     end
 
@@ -59,6 +65,28 @@ describe LogStash::Outputs::Sns do
       let(:event) { LogStash::Event.new("sns" => arn, "sns_subject" => sns_subject) }
 
       include_examples("publishing correctly")
+    end
+  end
+
+  describe "determining the subject" do
+    it "should return 'sns_subject' when set" do
+      event = LogStash::Event.new("sns_subject" => "foo")
+      expect(subject.send(:event_subject, event)).to eql("foo")
+    end
+
+    it "should return the sns subject as JSON if not a string" do
+      event = LogStash::Event.new("sns_subject" => ["foo", "bar"])
+      expect(subject.send(:event_subject, event)).to eql(LogStash::Json.dump(["foo", "bar"]))
+    end
+
+    it "should return the host if 'sns_subject' not set" do
+      event = LogStash::Event.new("host" => "foo")
+      expect(subject.send(:event_subject, event)).to eql("foo")
+    end
+
+    it "should return 'NO SUBJECT' when subject cannot be determined" do
+      event = LogStash::Event.new("foo" => "bar")
+      expect(subject.send(:event_subject, event)).to eql(LogStash::Outputs::Sns::NO_SUBJECT)
     end
   end
 
@@ -87,6 +115,10 @@ describe LogStash::Outputs::Sns do
 
     it "should attempt to publish a boot message" do
       expect(subject).to have_received(:publish_boot_message_arn).once
+      x = case "foo"
+            when "bar"
+              "hello"
+          end
     end
 
     it "should truncate long messages before sending" do
