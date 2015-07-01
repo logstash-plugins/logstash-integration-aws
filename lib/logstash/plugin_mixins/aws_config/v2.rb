@@ -17,7 +17,7 @@ module LogStash::PluginMixins::AwsConfig::V2
 
     opts[:credentials] = credentials if credentials
 
-    opts[:proxy_uri] = @proxy_uri if @proxy_uri
+    opts[:http_proxy] = @proxy_uri if @proxy_uri
 
     # The AWS SDK for Ruby doesn't know how to make an endpoint hostname from a region
     # for example us-west-1 -> foosvc.us-west-1.amazonaws.com

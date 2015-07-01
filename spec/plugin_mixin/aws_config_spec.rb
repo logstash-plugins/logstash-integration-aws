@@ -125,6 +125,19 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
     end
   end
 
+  describe 'config proxy' do
+    let(:proxy) { "http://localhost:1234"  }
+    let(:settings) { { 'access_key_id' => '1234',  'secret_access_key' => 'secret', 'region' => 'us-west-2', 'proxy_uri' => proxy } }
+
+    it "should set the http_proxy option" do
+      expect(subject[:http_proxy]).to eql(proxy)
+    end
+
+    it "should not set the legacy http proxy option" do
+      expect(subject[:proxy_uri]).not_to eql(proxy)
+    end
+  end
+
   describe 'config region' do
     context "when the class implement `#aws_service_endpoint`" do
       context 'region provided' do
