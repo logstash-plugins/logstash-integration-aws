@@ -1,3 +1,6 @@
+# 1.0.1
+  * Properly trim messages for AWS without breaking unicode byte boundaries
+
 # 1.0.0
   * Full refactor. 
   * This plugin now uses codecs for all formatting. The 'format' option has now been removed. Please use a codec.

@@ -91,8 +91,8 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   def send_sns_message(arn, subject, message)
     raise ArgumentError, 'An SNS ARN is required.' unless arn
 
-    trunc_subj = subject.slice(0, MAX_SUBJECT_SIZE_IN_CHARACTERS)
-    trunc_msg = message.slice(0, MAX_MESSAGE_SIZE_IN_BYTES)
+    trunc_subj = LogStash::Util::UnicodeTrimmer.trim_bytes(subject, MAX_SUBJECT_SIZE_IN_CHARACTERS)
+    trunc_msg = LogStash::Util::UnicodeTrimmer.trim_bytes(message, MAX_MESSAGE_SIZE_IN_BYTES)
 
     @logger.debug? && @logger.debug("Sending event to SNS topic [#{arn}] with subject [#{trunc_subj}] and message: #{trunc_msg}")
 
