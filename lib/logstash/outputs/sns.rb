@@ -2,6 +2,8 @@
 require "logstash/outputs/base"
 require "logstash/namespace"
 require "logstash/plugin_mixins/aws_config"
+require "logstash/util"
+require "logstash/util/unicode_trimmer"
 
 # SNS output.
 #
