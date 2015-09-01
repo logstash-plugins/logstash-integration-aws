@@ -133,7 +133,5 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
   public
   def teardown
     buffer_flush(:final => true)
-    @sqs_queue = nil
-    finished
   end # def teardown
 end
