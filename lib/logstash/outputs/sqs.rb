@@ -126,12 +126,12 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
   end # def receive
 
   # called from Stud::Buffer#buffer_flush when there are events to flush
-  def flush(events, teardown=false)
+  def flush(events, close=false)
     @sqs_queue.batch_send(events)
   end
 
   public
-  def teardown
+  def close
     buffer_flush(:final => true)
-  end # def teardown
+  end # def close
 end
