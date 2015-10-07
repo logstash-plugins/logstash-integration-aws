@@ -67,7 +67,7 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
 
   public
   def receive(event)
-    return unless output?(event)
+    
 
     if (sns_msg = event["sns_message"])
       if sns_msg.is_a?(String)
