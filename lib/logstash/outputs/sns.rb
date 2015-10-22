@@ -28,7 +28,7 @@ require "logstash/util/unicode_trimmer"
 # ==== Upgrading to 2.0.0
 #
 # This plugin used to have a `format` option for controlling the encoding of messages prior to being sent to SNS.
-# This plugin now uses the logstash standard https://www.elastic.co/guide/en/logstash/current/configuration.html#codec[codec] option for encoding instead.
+# This plugin now uses the logstash standard <<codec,codec>> option for encoding instead.
 # If you want the same 'plain' format as the v0/1 codec (`format => "plain"`) use `codec => "s3_plain"`.
 #
 class LogStash::Outputs::Sns < LogStash::Outputs::Base
