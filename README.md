@@ -1,7 +1,6 @@
 # Logstash Plugin
 
-[![Build
-Status](http://build-eu-00.elastic.co/view/LS%20Plugins/view/LS%20Codecs/job/logstash-plugin-codec-cloudfront-unit/badge/icon)](http://build-eu-00.elastic.co/view/LS%20Plugins/view/LS%20Codecs/job/logstash-plugin-codec-cloudfront-unit/)
+[![Travis Build Status](https://travis-ci.org/logstash-plugins/logstash-codec-cloudfront.svg)](https://travis-ci.org/logstash-plugins/logstash-codec-cloudfront)
 
 This is a plugin for [Logstash](https://github.com/elastic/logstash).
 
