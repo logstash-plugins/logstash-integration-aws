@@ -1,6 +1,6 @@
 # Logstash Plugin
 
-[![Build Status](http://build-eu-00.elastic.co/buildStatus/icon?job=logstash-plugin-mixin-aws-unit)](http://build-eu-00.elastic.co/job/logstash-plugin-mixin-aws-unit/)
+[![Travis Build Status](https://travis-ci.org/logstash-plugins/logstash-mixin-aws.svg)](https://travis-ci.org/logstash-plugins/logstash-mixin-aws)
 
 This is a plugin for [Logstash](https://github.com/elastic/logstash).
 
