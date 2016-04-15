@@ -1,3 +1,6 @@
+# 2.0.5
+  - Add travis config and build status
+  - Require the AWS mixin to be higher than 1.0.0
 # 2.0.4
   - Depend on logstash-core-plugin-api instead of logstash-core, removing the need to mass update plugins on major releases of logstash
 # 2.0.3
