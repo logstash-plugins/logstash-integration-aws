@@ -69,7 +69,7 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   def receive(event)
     
 
-    if (sns_msg = event["sns_message"])
+    if (sns_msg = event.get("sns_message"))
       if sns_msg.is_a?(String)
         send_sns_message(event_arn(event), event_subject(event), sns_msg)
       else
@@ -107,13 +107,13 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
 
   private
   def event_subject(event)
-    sns_subject = event["sns_subject"]
+    sns_subject = event.get("sns_subject")
     if sns_subject.is_a?(String)
       sns_subject
     elsif sns_subject
       LogStash::Json.dump(sns_subject)
-    elsif event["host"]
-      event["host"]
+    elsif event.get("host")
+      event.get("host")
     else
       NO_SUBJECT
     end
@@ -121,6 +121,6 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
 
   private
   def event_arn(event)
-    event["sns"] || @arn
+    event.get("sns") || @arn
   end
 end
