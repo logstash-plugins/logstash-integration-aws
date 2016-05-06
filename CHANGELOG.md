@@ -1,3 +1,5 @@
+## 3.0.0
+  - Update the plugin to the version 2.0 of the plugin api, this change is required for Logstash 5.0 compatibility. See https://github.com/elastic/logstash/issues/5141
 # 2.0.5
   - Add travis config and build status
   - Require the AWS mixin to be higher than 1.0.0
