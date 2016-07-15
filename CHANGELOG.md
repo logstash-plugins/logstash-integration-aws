@@ -1,3 +1,6 @@
+## 4.1.0
+  - Update aws-sdk to ~> 2.3.0
+
 ## 4.0.2
   - Relax constraint on logstash-core-plugin-api to >= 1.60 <= 2.99
 
