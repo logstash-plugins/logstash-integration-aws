@@ -1,3 +1,6 @@
+## 4.2.0
+  - Add region ap-south-1
+
 ## 4.1.0
   - Update aws-sdk to ~> 2.3.0
 
