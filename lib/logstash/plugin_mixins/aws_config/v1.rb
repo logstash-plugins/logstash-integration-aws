@@ -22,6 +22,10 @@ module LogStash::PluginMixins::AwsConfig::V1
   def aws_options_hash
     opts = {}
 
+    if @role_arn || @role_session_name
+      @logger.warn("role_arn and role_session_name settings are not supported in the v1 plugin")
+    end
+
     if @access_key_id.is_a?(NilClass) ^ @secret_access_key.is_a?(NilClass)
       @logger.warn("Likely config error: Only one of access_key_id or secret_access_key was provided but not both.")
     end

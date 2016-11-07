@@ -2,6 +2,7 @@
 require "logstash/devutils/rspec/spec_helper"
 require "logstash/plugin_mixins/aws_config"
 require 'aws-sdk'
+require 'timecop'
 
 class DummyInputAwsConfigV2 < LogStash::Inputs::Base
   include LogStash::PluginMixins::AwsConfig::V2
@@ -135,6 +136,60 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
           expect(subject.secret_access_key).to eq(settings['secret_access_key'])
         end
       end
+
+      context 'role arn is provided' do
+        let(:settings) { { 'role_arn' => 'arn:aws:iam::012345678910:role/foo', 'region' => 'us-west-2' } }
+        let(:sts_double) { instance_double(Aws::STS::Client) }
+        let(:now) { Time.now }
+        let(:expiration) { Time.at(now.to_i + 3600) }
+        let(:temp_credentials) {
+          double(credentials:
+                  double(
+                    access_key_id: '1234',
+                    secret_access_key: 'secret',
+                    session_token: 'session_token',
+                    expiration: expiration.to_s,
+                  )
+                )
+        }
+        let(:new_temp_credentials) {
+          double(credentials:
+                  double(
+                    access_key_id: '5678',
+                    secret_access_key: 'secret1',
+                    session_token: 'session_token1',
+                    expiration: expiration.to_s,
+                  )
+                )
+        }
+
+        before do
+          allow(Aws::STS::Client).to receive(:new).and_return(sts_double)
+          allow(sts_double).to receive(:assume_role)  {
+            if Time.now < expiration
+              temp_credentials
+            else
+              new_temp_credentials
+            end
+          }
+        end
+
+        it 'supports passing role_arn' do
+          Timecop.freeze(now) do
+            expect(subject.credentials.access_key_id).to eq('1234')
+            expect(subject.credentials.secret_access_key).to eq('secret')
+            expect(subject.credentials.session_token).to eq('session_token')
+          end
+        end
+
+        it 'rotates the keys once they expire' do
+          Timecop.freeze(Time.at(expiration.to_i + 100)) do
+            expect(subject.credentials.access_key_id).to eq('5678')
+            expect(subject.credentials.secret_access_key).to eq('secret1')
+            expect(subject.credentials.session_token).to eq('session_token1')
+          end
+        end       
+      end
     end
   end
 
@@ -197,4 +252,5 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
       expect(subject).to eq({ :dummy_input_aws_config_region => "us-east-1.awswebservice.local" })  
     end
   end
+
 end

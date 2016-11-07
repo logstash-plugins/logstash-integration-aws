@@ -51,15 +51,25 @@ module LogStash::PluginMixins::AwsConfig::V2
                    }
 
                    credentials_opts[:session_token] = @session_token.value if @session_token
-                 elsif @aws_credentials_file
-                   credentials_opts = YAML.load_file(@aws_credentials_file)
-                 end
-
-                 if credentials_opts
                    Aws::Credentials.new(credentials_opts[:access_key_id],
                                         credentials_opts[:secret_access_key],
                                         credentials_opts[:session_token])
+                 elsif @aws_credentials_file
+                   credentials_opts = YAML.load_file(@aws_credentials_file)
+                   Aws::Credentials.new(credentials_opts[:access_key_id],
+                                        credentials_opts[:secret_access_key],
+                                        credentials_opts[:session_token])
+                 elsif @role_arn
+                   assume_role
                  end
                end
+  end
+
+  def assume_role
+    Aws::AssumeRoleCredentials.new(
+      :client => Aws::STS::Client.new(:region => @region),
+      :role_arn => @role_arn,
+      :role_session_name => @role_session_name
+    )
   end
 end
