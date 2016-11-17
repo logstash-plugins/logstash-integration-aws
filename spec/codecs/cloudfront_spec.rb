@@ -50,8 +50,8 @@ describe LogStash::Codecs::Cloudfront do
         events << event
       end
 
-      expect(events.first["cloudfront_version"]).to eq("1.0")
-      expect(events.first["cloudfront_fields"]).to eq("date time x-edge-location c-ip x-event sc-bytes x-cf-status x-cf-client-id cs-uri-stem cs-uri-query c-referrer x-page-url​  c-user-agent x-sname x-sname-query x-file-ext x-sid")
+      expect(events.first.get("cloudfront_version")).to eq("1.0")
+      expect(events.first.get("cloudfront_fields")).to eq("date time x-edge-location c-ip x-event sc-bytes x-cf-status x-cf-client-id cs-uri-stem cs-uri-query c-referrer x-page-url​  c-user-agent x-sname x-sname-query x-file-ext x-sid")
     end
   end
 
