@@ -50,8 +50,8 @@ class LogStash::Codecs::Cloudfront < LogStash::Codecs::Base
   public
   def create_event(line, metadata)
     event = LogStash::Event.new("message" => @converter.convert(line))
-    event["cloudfront_version"] = metadata["cloudfront_version"]
-    event["cloudfront_fields"] = metadata["cloudfront_fields"]
+    event.set("cloudfront_version", metadata["cloudfront_version"])
+    event.set("cloudfront_fields", metadata["cloudfront_fields"])
     event
   end
 
