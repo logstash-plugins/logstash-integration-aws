@@ -1,136 +1,174 @@
 # encoding: utf-8
-require "logstash/outputs/base"
-require "logstash/namespace"
-require "logstash/plugin_mixins/aws_config"
-require "stud/buffer"
-require "digest/sha2"
 
-# Push events to an Amazon Web Services Simple Queue Service (SQS) queue.
+require 'aws-sdk'
+require 'logstash/errors'
+require 'logstash/namespace'
+require 'logstash/outputs/base'
+require 'logstash/outputs/sqs/patch'
+require 'logstash/plugin_mixins/aws_config'
+
+# Forcibly load all modules marked to be lazily loaded.
 #
-# SQS is a simple, scalable queue system that is part of the 
-# Amazon Web Services suite of tools.
+# It is recommended that this is called prior to launching threads. See
+# https://aws.amazon.com/blogs/developer/threading-with-the-aws-sdk-for-ruby/.
+Aws.eager_autoload!
+
+# Push events to an Amazon Web Services (AWS) Simple Queue Service (SQS) queue.
 #
-# Although SQS is similar to other queuing systems like AMQP, it
-# uses a custom API and requires that you have an AWS account.
-# See http://aws.amazon.com/sqs/ for more details on how SQS works,
-# what the pricing schedule looks like and how to setup a queue.
-#
-# To use this plugin, you *must*:
-#
-#  * Have an AWS account
-#  * Setup an SQS queue
-#  * Create an identify that has access to publish messages to the queue.
+# SQS is a simple, scalable queue system that is part of the Amazon Web
+# Services suite of tools. Although SQS is similar to other queuing systems
+# such as Advanced Message Queuing Protocol (AMQP), it uses a custom API and
+# requires that you have an AWS account. See http://aws.amazon.com/sqs/ for
+# more details on how SQS works, what the pricing schedule looks like and how
+# to setup a queue.
 #
 # The "consumer" identity must have the following permissions on the queue:
 #
-#  * sqs:ChangeMessageVisibility
-#  * sqs:ChangeMessageVisibilityBatch
-#  * sqs:GetQueueAttributes
-#  * sqs:GetQueueUrl
-#  * sqs:ListQueues
-#  * sqs:SendMessage
-#  * sqs:SendMessageBatch
+#   * `sqs:GetQueueUrl`
+#   * `sqs:SendMessage`
+#   * `sqs:SendMessageBatch`
 #
-# Typically, you should setup an IAM policy, create a user and apply the IAM policy to the user.
-# A sample policy is as follows:
-# [source,ruby]
-#      {
-#        "Statement": [
-#          {
-#            "Sid": "Stmt1347986764948",
-#            "Action": [
-#              "sqs:ChangeMessageVisibility",
-#              "sqs:ChangeMessageVisibilityBatch",
-#              "sqs:GetQueueAttributes",
-#              "sqs:GetQueueUrl",
-#              "sqs:ListQueues",
-#              "sqs:SendMessage",
-#              "sqs:SendMessageBatch"
-#            ],
-#            "Effect": "Allow",
-#            "Resource": [
-#              "arn:aws:sqs:us-east-1:200850199751:Logstash"
-#            ]
-#          }
-#        ]
-#      }
+# Typically, you should setup an IAM policy, create a user and apply the IAM
+# policy to the user. See http://aws.amazon.com/iam/ for more details on
+# setting up AWS identities. A sample policy is as follows:
 #
-# See http://aws.amazon.com/iam/ for more details on setting up AWS identities.
+# [source,json]
+# {
+#   "Version": "2012-10-17",
+#   "Statement": [
+#     {
+#       "Effect": "Allow",
+#       "Action": [
+#         "sqs:GetQueueUrl",
+#         "sqs:SendMessage",
+#         "sqs:SendMessageBatch"
+#       ],
+#       "Resource": "arn:aws:sqs:us-east-1:123456789012:my-sqs-queue"
+#     }
+#   ]
+# }
+#
+# = Batch Publishing
+# This output publishes messages to SQS in batches in order to optimize event
+# throughput and increase performance. This is done using the
+# [`SendMessageBatch`](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessageBatch.html)
+# API. When publishing messages to SQS in batches, the following service limits
+# must be respected (see
+# [Limits in Amazon SQS](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/limits-messages.html)):
+#
+#   * The maximum allowed individual message size is 256KiB.
+#   * The maximum total payload size (i.e. the sum of the sizes of all
+#     individual messages within a batch) is also 256KiB.
+#
+# This plugin will dynamically adjust the size of the batch published to SQS in
+# order to ensure that the total payload size does not exceed 256KiB.
+#
+# WARNING: This output cannot currently handle messages larger than 256KiB. Any
+# single message exceeding this size will be dropped.
 #
 class LogStash::Outputs::SQS < LogStash::Outputs::Base
-  include LogStash::PluginMixins::AwsConfig
-  include Stud::Buffer
+  include LogStash::PluginMixins::AwsConfig::V2
 
-  config_name "sqs"
+  config_name 'sqs'
+  default :codec, 'json'
 
-  # Name of SQS queue to push messages into. Note that this is just the name of the queue, not the URL or ARN.
-  config :queue, :validate => :string, :required => true
+  concurrency :shared
 
-  # Set to true if you want send messages to SQS in batches with `batch_send`
-  # from the amazon sdk
-  config :batch, :validate => :boolean, :default => true
+  # Set to `true` to send messages to SQS in batches (with the
+  # `SendMessageBatch` API) or `false` to send messages to SQS individually
+  # (with the `SendMessage` API). The size of the batch is configurable via
+  # `batch_events`.
+  config :batch, :validate => :boolean, :default => true, :deprecated => true
 
-  # If `batch` is set to true, the number of events we queue up for a `batch_send`.
+  # The number of events to be sent in each batch. This is only relevant when
+  # `batch` is set to `true`.
   config :batch_events, :validate => :number, :default => 10
 
-  # If `batch` is set to true, the maximum amount of time between `batch_send` commands when there are pending events to flush.
-  config :batch_timeout, :validate => :number, :default => 5
+  config :batch_timeout, :validate => :number, :deprecated => 'This setting no longer has any effect.'
+
+  # The maximum number of bytes for any message sent to SQS. Messages exceeding
+  # this size will be dropped. See
+  # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/limits-messages.html.
+  config :message_max_size, :validate => :bytes, :default => '256KiB'
+
+  # The name of the target SQS queue.
+  config :queue, :validate => :string, :required => true
 
   public
-  def aws_service_endpoint(region)
-    return {
-        :sqs_endpoint => "sqs.#{region}.amazonaws.com"
-    }
-  end
-
-  public 
   def register
-    require "aws-sdk"
+    @sqs = Aws::SQS::Client.new(aws_options_hash)
 
-    @sqs = AWS::SQS.new(aws_options_hash)
-
-    if @batch
-      if @batch_events > 10
-        raise RuntimeError.new(
-          "AWS only allows a batch_events parameter of 10 or less"
-        )
-      elsif @batch_events <= 1
-        raise RuntimeError.new(
-          "batch_events parameter must be greater than 1 (or its not a batch)"
-        )
-      end
-      buffer_initialize(
-        :max_items => @batch_events,
-        :max_interval => @batch_timeout,
-        :logger => @logger
-      )
-    end
+    if @batch_events > 10
+      raise LogStash::ConfigurationError, 'The maximum batch size is 10 events'
+    elsif @batch_events < 1
+      raise LogStash::ConfigurationError, 'The batch size must be greater than 0'
+   end
 
     begin
-      @logger.debug("Connecting to AWS SQS queue '#{@queue}'...")
-      @sqs_queue = @sqs.queues.named(@queue)
-      @logger.info("Connected to AWS SQS queue '#{@queue}' successfully.")
-    rescue Exception => e
-      @logger.error("Unable to access SQS queue '#{@queue}': #{e.to_s}")
-    end # begin/rescue
-  end # def register
-
-  public
-  def receive(event)
-    if @batch
-      buffer_receive(event.to_json)
-      return
+      @logger.debug('Connecting to SQS queue', :queue => @queue, :region => region)
+      @queue_url = @sqs.get_queue_url(:queue_name => @queue)[:queue_url]
+      @logger.info('Connected to SQS queue successfully', :queue => @queue, :region => region)
+    rescue Aws::SQS::Errors::ServiceError => e
+      @logger.error('Failed to connect to SQS', :error => e)
+      raise LogStash::ConfigurationError, 'Verify the SQS queue name and your credentials'
     end
-    @sqs_queue.send_message(event.to_json)
-  end # def receive
-
-  # called from Stud::Buffer#buffer_flush when there are events to flush
-  def flush(events, close=false)
-    @sqs_queue.batch_send(events)
   end
 
   public
-  def close
-    buffer_flush(:final => true)
-  end # def close
+  def multi_receive_encoded(encoded_events)
+    if @batch
+      multi_receive_encoded_batch(encoded_events)
+    else
+      multi_receive_encoded_single(encoded_events)
+    end
+  end
+
+  private
+  def multi_receive_encoded_batch(encoded_events)
+    bytes = 0
+    entries = []
+
+    # Split the events into multiple batches to ensure that no single batch
+    # exceeds `@message_max_size` bytes.
+    encoded_events.each_with_index do |encoded_event, index|
+      event, encoded = encoded_event
+
+      if encoded.bytesize > @message_max_size
+        @logger.warn('Message exceeds maximum length and will be dropped', :message_size => encoded.bytesize)
+        next
+      end
+
+      if entries.size >= @batch_events or (bytes + encoded.bytesize) > @message_max_size
+        send_message_batch(entries)
+
+        bytes = 0
+        entries = []
+      end
+
+      bytes += encoded.bytesize
+      entries.push(:id => index.to_s, :message_body => encoded)
+    end
+
+    send_message_batch(entries) unless entries.empty?
+  end
+
+  private
+  def multi_receive_encoded_single(encoded_events)
+    encoded_events.each do |encoded_event|
+      event, encoded = encoded_event
+
+      if encoded.bytesize > @message_max_size
+        @logger.warn('Message exceeds maximum length and will be dropped', :message_size => encoded.bytesize)
+        next
+      end
+
+      @sqs.send_message(:queue_url => @queue_url, :message_body => encoded)
+    end
+  end
+
+  private
+  def send_message_batch(entries)
+    @logger.debug("Publishing #{entries.size} messages to SQS", :queue_url => @queue_url, :entries => entries)
+    @sqs.send_message_batch(:queue_url => @queue_url, :entries => entries)
+  end
 end
