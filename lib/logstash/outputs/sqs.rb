@@ -80,8 +80,8 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
   # `batch_events`.
   config :batch, :validate => :boolean, :default => true, :deprecated => true
 
-  # The number of events to be sent in each batch. This is only relevant when
-  # `batch` is set to `true`.
+  # The number of events to be sent in each batch. Set this to `1` to disable
+  # the batch sending of messages.
   config :batch_events, :validate => :number, :default => 10
 
   config :batch_timeout, :validate => :number, :deprecated => 'This setting no longer has any effect.'
@@ -91,7 +91,8 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
   # http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/limits-messages.html.
   config :message_max_size, :validate => :bytes, :default => '256KiB'
 
-  # The name of the target SQS queue.
+  # The name of the target SQS queue. Note that this is just the name of the
+  # queue, not the URL or ARN.
   config :queue, :validate => :string, :required => true
 
   public
@@ -116,7 +117,7 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
 
   public
   def multi_receive_encoded(encoded_events)
-    if @batch
+    if @batch and @batch_events > 1
       multi_receive_encoded_batch(encoded_events)
     else
       multi_receive_encoded_single(encoded_events)
