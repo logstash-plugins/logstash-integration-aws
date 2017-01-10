@@ -1,3 +1,13 @@
+## 4.0.0
+  - Add unit and integration tests.
+  - Adjust the sample IAM policy in the documentation, removing actions which are not actually required by the plugin. Specifically, the following actions are not required: `sqs:ChangeMessageVisibility`, `sqs:ChangeMessageVisibilityBatch`, `sqs:GetQueueAttributes` and `sqs:ListQueues`.
+  - Dynamically adjust the batch message size. SQS allows up to 10 messages to be published in a single batch, however the total size of the batch is limited to 256KiB (see [Limits in Amazon SQS](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/limits-messages.html)). This plugin will now dynamically adjust the number of events included in each batch to ensure that the total batch size does not exceed `message_max_size`. Note that any single messages which exceeds the 256KiB size limit will be dropped.
+  - Move to the new concurrency model, `:shared`.
+  - The `batch_timeout` parameter has been deprecated because it no longer has any effect.
+  - The individual (non-batch) mode of operation (i.e. `batch => false`) has been deprecated. Batch mode is vastly more performant and we do not believe that there are any use cases which require non-batch mode. You can emulate non-batch mode by setting `batch_events => 1`, although this will call `sqs:SendMessageBatch` with a batch size of 1 rather than calling `sqs:SendMessage`.
+  - The plugin now implements `#multi_receive_encoded` and no longer uses `Stud::Buffer`.
+  - Update the AWS SDK to version 2.
+
 ## 3.0.2
   - Relax constraint on logstash-core-plugin-api to >= 1.60 <= 2.99
 
@@ -13,7 +23,7 @@
 # 2.0.3
   - New dependency requirements for logstash-core for the 5.0 release
 ## 2.0.0
- - Plugins were updated to follow the new shutdown semantic, this mainly allows Logstash to instruct input plugins to terminate gracefully, 
+ - Plugins were updated to follow the new shutdown semantic, this mainly allows Logstash to instruct input plugins to terminate gracefully,
    instead of using Thread.raise on the plugins' threads. Ref: https://github.com/elastic/logstash/pull/3895
  - Dependency on logstash-core update to 2.0
 
