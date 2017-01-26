@@ -48,7 +48,7 @@ Aws.eager_autoload!
 #   ]
 # }
 #
-# = Batch Publishing
+# ==== Batch Publishing
 # This output publishes messages to SQS in batches in order to optimize event
 # throughput and increase performance. This is done using the
 # [`SendMessageBatch`](http://docs.aws.amazon.com/AWSSimpleQueueService/latest/APIReference/API_SendMessageBatch.html)
