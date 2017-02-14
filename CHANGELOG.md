@@ -1,3 +1,6 @@
+## 4.0.1
+  - Docs: Fix doc generation issue by removing extraneous comments.
+
 ## 4.0.0
   - Add unit and integration tests.
   - Adjust the sample IAM policy in the documentation, removing actions which are not actually required by the plugin. Specifically, the following actions are not required: `sqs:ChangeMessageVisibility`, `sqs:ChangeMessageVisibilityBatch`, `sqs:GetQueueAttributes` and `sqs:ListQueues`.

@@ -7,10 +7,6 @@ require 'logstash/outputs/base'
 require 'logstash/outputs/sqs/patch'
 require 'logstash/plugin_mixins/aws_config'
 
-# Forcibly load all modules marked to be lazily loaded.
-#
-# It is recommended that this is called prior to launching threads. See
-# https://aws.amazon.com/blogs/developer/threading-with-the-aws-sdk-for-ruby/.
 Aws.eager_autoload!
 
 # Push events to an Amazon Web Services (AWS) Simple Queue Service (SQS) queue.
