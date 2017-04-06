@@ -39,6 +39,8 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
   NO_SUBJECT = "NO SUBJECT"
 
   config_name "sns"
+  
+  concurrency :shared
 
   # Optional ARN to send messages to. If you do not set this you must
   # include the `sns` field in your events to set the ARN on a per-message basis!
