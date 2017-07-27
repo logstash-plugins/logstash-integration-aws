@@ -70,17 +70,13 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
 
   concurrency :shared
 
-  # Set to `true` to send messages to SQS in batches (with the
-  # `SendMessageBatch` API) or `false` to send messages to SQS individually
-  # (with the `SendMessage` API). The size of the batch is configurable via
-  # `batch_events`.
-  config :batch, :validate => :boolean, :default => true, :deprecated => true
+  config :batch, :validate => :boolean, :default => true, :obsolete => "This option is obsolete. Set 'batch_events' to `1` to disable batching"
 
   # The number of events to be sent in each batch. Set this to `1` to disable
   # the batch sending of messages.
   config :batch_events, :validate => :number, :default => 10
 
-  config :batch_timeout, :validate => :number, :deprecated => 'This setting no longer has any effect.'
+  config :batch_timeout, :validate => :number, :obsolete => 'This setting is obsolete.'
 
   # The maximum number of bytes for any message sent to SQS. Messages exceeding
   # this size will be dropped. See
@@ -113,7 +109,7 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
 
   public
   def multi_receive_encoded(encoded_events)
-    if @batch and @batch_events > 1
+    if @batch_events > 1
       multi_receive_encoded_batch(encoded_events)
     else
       multi_receive_encoded_single(encoded_events)

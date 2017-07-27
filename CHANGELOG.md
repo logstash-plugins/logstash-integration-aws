@@ -1,3 +1,6 @@
+## 5.0.0
+  - Breaking: mark deprecated `batch` and `batch_timeout` options as obsolete
+
 ## 4.0.1
   - Docs: Fix doc generation issue by removing extraneous comments.
 

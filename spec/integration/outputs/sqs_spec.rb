@@ -72,7 +72,7 @@ describe LogStash::Outputs::SQS, :integration => true do
     end
 
     context 'with batching disabled' do
-      let(:config) { super.merge('batch' => false) }
+      let(:config) { super.merge('batch_events' => 1) }
 
       it 'publishes to SQS' do
         subject.multi_receive_encoded(sample_events)
@@ -80,9 +80,7 @@ describe LogStash::Outputs::SQS, :integration => true do
       end
     end
 
-    context 'with batching enabled' do
-      let(:config) { super.merge('batch' => true) }
-
+    context 'with batching enabled (default)' do
       it 'publishes to SQS' do
         subject.multi_receive_encoded(sample_events)
         expect(receive_all_messages(@queue_url).count).to eq(sample_events.count)

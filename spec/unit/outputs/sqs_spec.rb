@@ -97,24 +97,9 @@ describe LogStash::Outputs::SQS do
       end
     end
 
-    context 'with batching disabled using the `batch` parameter' do
-      let(:config) { super.merge('batch' => false) }
-
-      it 'should call send_message' do
-        expect(sqs).to receive(:send_message).with(:queue_url => queue_url, :message_body => sample_event_encoded).exactly(sample_count).times
-        subject.multi_receive_encoded(sample_events)
-      end
-
-      it 'should not call send_message_batch' do
-        expect(sqs).not_to receive(:send_message_batch)
-        subject.multi_receive_encoded(sample_events)
-      end
-    end
-
     context 'with batching disabled' do
       let(:config) do
         super.merge({
-          'batch' => true,
           'batch_events' => 1,
         })
       end
@@ -134,7 +119,6 @@ describe LogStash::Outputs::SQS do
       let(:batch_events) { 3 }
       let(:config) do
         super.merge({
-          'batch' => true,
           'batch_events' => batch_events,
         })
       end
