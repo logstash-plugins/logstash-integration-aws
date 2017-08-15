@@ -1,3 +1,6 @@
+## 5.0.1
+  - Fix some documentation issues
+
 ## 5.0.0
   - Breaking: mark deprecated `batch` and `batch_timeout` options as obsolete
 
