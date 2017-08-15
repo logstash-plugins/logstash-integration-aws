@@ -1,3 +1,6 @@
+## 4.2.3
+  - Fix some documentation issues
+
 ## 4.2.1
   - Add eu-west-2, us-east-2 and ca-central-1 regions
 
