@@ -1,3 +1,6 @@
+## 4.0.5
+  - Fix some documentation issues
+
 ## 4.0.3
   - Mark this output as thread safe to allow concurrent connections to AWS.
 
