@@ -1,9 +1,9 @@
 Gem::Specification.new do |s|
 
   s.name            = 'logstash-output-sqs'
-  s.version         = '5.0.1'
+  s.version         = '5.0.2'
   s.licenses        = ['Apache License (2.0)']
-  s.summary         = "Push events to an Amazon Web Services Simple Queue Service (SQS) queue."
+  s.summary         = "Pushes events to an Amazon Web Services Simple Queue Service queue"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
   s.authors         = ["Elastic"]
   s.email           = 'info@elastic.co'
