@@ -34,6 +34,10 @@ module LogStash::PluginMixins::AwsConfig::V2
       opts.merge!({ :region => @region })
     end
 
+    if !@endpoint.is_a?(NilClass)
+      opts[:endpoint] = @endpoint
+    end
+
     return opts
   end
 

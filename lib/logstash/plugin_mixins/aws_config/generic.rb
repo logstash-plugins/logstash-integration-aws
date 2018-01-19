@@ -26,6 +26,9 @@ module LogStash::PluginMixins::AwsConfig::Generic
     # URI to proxy server if required
     config :proxy_uri, :validate => :string
 
+    # Custom endpoint to connect to s3
+    config :endpoint, :validate => :string
+
     # Path to YAML file containing a hash of AWS credentials.
     # This file will only be loaded if `access_key_id` and
     # `secret_access_key` aren't set. The contents of the

@@ -51,6 +51,10 @@ module LogStash::PluginMixins::AwsConfig::V1
     # For a list, see https://github.com/aws/aws-sdk-ruby/blob/master/lib/aws/core/configuration.rb
     opts.merge!(self.aws_service_endpoint(@region))
 
+    if !@endpoint.is_a?(NilClass)
+      opts[:endpoint] = @endpoint
+    end
+
     return opts
   end # def aws_options_hash
 end

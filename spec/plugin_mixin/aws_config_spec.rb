@@ -81,6 +81,16 @@ describe LogStash::PluginMixins::AwsConfig do
     end
   end
 
+  describe 'config endpoint' do
+    context "endpoint provided" do
+      let(:settings) { { 'access_key_id' => '1234',  'secret_access_key' => 'secret', 'endpoint' => 'http://localhost'} }
+
+      it 'should use specified endpoint' do
+          expect(subject[:endpoint]).to eq("http://localhost")
+      end
+    end
+  end
+
   context 'when we arent providing credentials' do
     let(:settings) { {} }
     it 'should always return a hash' do
