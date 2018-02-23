@@ -43,10 +43,10 @@ module LogStash::PluginMixins::AwsConfig::V2
                  if @access_key_id && @secret_access_key
                    credentials_opts = {
                      :access_key_id => @access_key_id,
-                     :secret_access_key => @secret_access_key
+                     :secret_access_key => @secret_access_key.value
                    }
 
-                   credentials_opts[:session_token] = @session_token if @session_token
+                   credentials_opts[:session_token] = @session_token.value if @session_token
                  elsif @aws_credentials_file
                    credentials_opts = YAML.load_file(@aws_credentials_file)
                  end

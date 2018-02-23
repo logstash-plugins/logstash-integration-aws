@@ -18,10 +18,10 @@ module LogStash::PluginMixins::AwsConfig::Generic
     config :access_key_id, :validate => :string
 
     # The AWS Secret Access Key
-    config :secret_access_key, :validate => :string
+    config :secret_access_key, :validate => :password
 
     # The AWS Session token for temporary credential
-    config :session_token, :validate => :string
+    config :session_token, :validate => :password
 
     # URI to proxy server if required
     config :proxy_uri, :validate => :string

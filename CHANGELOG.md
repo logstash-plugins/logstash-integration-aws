@@ -1,3 +1,6 @@
+## 4.2.4
+  - Minor config validation fixes
+
 ## 4.2.3
   - Fix some documentation issues
 
