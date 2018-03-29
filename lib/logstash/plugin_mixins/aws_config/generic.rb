@@ -6,7 +6,7 @@ module LogStash::PluginMixins::AwsConfig::Generic
 
   def generic_aws_config
     # The AWS Region
-    config :region, :validate => LogStash::PluginMixins::AwsConfig::REGIONS_ENDPOINT, :default => LogStash::PluginMixins::AwsConfig::US_EAST_1 
+    config :region, :validate => :string, :default => LogStash::PluginMixins::AwsConfig::US_EAST_1
 
     # This plugin uses the AWS SDK and supports several ways to get credentials, which will be tried in this order:
     #
