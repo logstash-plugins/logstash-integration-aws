@@ -1,3 +1,9 @@
+## 4.3.0
+  - Drop strict value validation for region option #36
+  - Add endpoint option to customize the endpoint uri #32
+  - Allow user to provide a role to assume #27
+  - Update aws-sdk dependency to '~> 2'
+
 ## 4.2.4
   - Minor config validation fixes
 
