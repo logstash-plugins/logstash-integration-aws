@@ -1,3 +1,6 @@
+## 5.1.0
+  - Add documentation for endpoint, role_arn and role_session_name #29
+
 ## 5.0.2
   - Update gemspec summary
 
