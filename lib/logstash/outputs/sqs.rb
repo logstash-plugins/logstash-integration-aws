@@ -87,6 +87,9 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
   # queue, not the URL or ARN.
   config :queue, :validate => :string, :required => true
 
+  # Account ID of the AWS account which owns the queue
+  config :queue_owner_aws_account_id, :validate => :string, :required => false
+
   public
   def register
     @sqs = Aws::SQS::Client.new(aws_options_hash)
@@ -98,9 +101,13 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
    end
 
     begin
-      @logger.debug('Connecting to SQS queue', :queue => @queue, :region => region)
-      @queue_url = @sqs.get_queue_url(:queue_name => @queue)[:queue_url]
-      @logger.info('Connected to SQS queue successfully', :queue => @queue, :region => region)
+      @logger.debug('Connecting to SQS queue', :queue => @queue, :region => region, :queue_owner_aws_account_id => @queue_owner_aws_account_id)
+      @queue_url = if @queue_owner_aws_account_id
+        @sqs.get_queue_url(:queue_name => @queue, :queue_owner_aws_account_id => @queue_owner_aws_account_id)[:queue_url]
+      else
+        @sqs.get_queue_url(:queue_name => @queue)[:queue_url]
+      end
+      @logger.info('Connected to SQS queue successfully', :queue => @queue, :region => region, :queue_owner_aws_account_id => @queue_owner_aws_account_id)
     rescue Aws::SQS::Errors::ServiceError => e
       @logger.error('Failed to connect to SQS', :error => e)
       raise LogStash::ConfigurationError, 'Verify the SQS queue name and your credentials'

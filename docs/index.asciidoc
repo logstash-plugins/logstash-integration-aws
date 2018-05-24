@@ -181,6 +181,14 @@ URI to proxy server if required
 The name of the target SQS queue. Note that this is just the name of the
 queue, not the URL or ARN.
 
+[id="plugins-{type}s-{plugin}-queue_owner_aws_account_id"]
+===== `queue_owner_aws_account_id`
+
+  * Value type is <<string,string>>
+  * There is no default value for this setting.
+
+The owning account id of the target SQS queue.
+
 [id="plugins-{type}s-{plugin}-region"]
 ===== `region` 
 

@@ -47,6 +47,14 @@ describe LogStash::Outputs::SQS, :integration => true do
       end
     end
 
+    context 'with a nonpermissive account id' do
+      let(:config) { super.merge('queue_owner_aws_account_id' => '123456789012')}
+
+      it 'raises a configuration error' do
+        expect { subject.register }.to raise_error(LogStash::ConfigurationError}
+      end
+    end
+
     context 'with valid configuration' do
       it 'does not raise an error' do
         expect { subject.register }.not_to raise_error
