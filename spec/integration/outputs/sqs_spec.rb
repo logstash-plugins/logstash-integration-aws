@@ -51,7 +51,7 @@ describe LogStash::Outputs::SQS, :integration => true do
       let(:config) { super.merge('queue_owner_aws_account_id' => '123456789012')}
 
       it 'raises a configuration error' do
-        expect { subject.register }.to raise_error(LogStash::ConfigurationError}
+        expect { subject.register }.to raise_error(LogStash::ConfigurationError)
       end
     end
 
