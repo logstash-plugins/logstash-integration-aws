@@ -187,7 +187,8 @@ queue, not the URL or ARN.
   * Value type is <<string,string>>
   * There is no default value for this setting.
 
-The owning account id of the target SQS queue.
+The owning account id of the target SQS queue. IAM permissions need to be
+configured on both accounts to function.
 
 [id="plugins-{type}s-{plugin}-region"]
 ===== `region` 
