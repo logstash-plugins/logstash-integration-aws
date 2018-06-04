@@ -1,3 +1,6 @@
+## 5.1.2
+  - Added the ability to send to a different account id's queue. [#30](https://github.com/logstash-plugins/logstash-output-sqs/pull/30)
+
 ## 5.1.1
   - Docs: Set the default_codec doc attribute.
 
