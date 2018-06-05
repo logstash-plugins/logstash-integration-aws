@@ -1,0 +1,1 @@
+{"name":"logstash-integration-aws","plugins":["logstash-input-s3","logstash-mixin-aws","logstash-output-s3"]}
