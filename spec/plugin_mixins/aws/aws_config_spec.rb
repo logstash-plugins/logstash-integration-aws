@@ -32,7 +32,7 @@ describe LogStash::PluginMixins::AwsConfig do
   describe 'config credential' do
 
     context 'in credential file' do
-      let(:settings) { { 'aws_credentials_file' => File.join(File.dirname(__FILE__), '..', 'fixtures/aws_credentials_file_sample_test.yml') } }
+      let(:settings) { { 'aws_credentials_file' => File.join(File.dirname(__FILE__), 'fixtures/aws_credentials_file_sample_test.yml') } }
 
       it 'should support reading configuration from a yaml file' do
         expect(subject).to include(:access_key_id => "1234", :secret_access_key => "secret")
@@ -109,7 +109,7 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
     subject { DummyInputAwsConfigV2.new(settings).aws_options_hash[:credentials] }
 
     context 'in credential file' do
-      let(:settings) { { 'aws_credentials_file' => File.join(File.dirname(__FILE__), '..', 'fixtures/aws_credentials_file_sample_test.yml') } }
+      let(:settings) { { 'aws_credentials_file' => File.join(File.dirname(__FILE__), 'fixtures/aws_credentials_file_sample_test.yml') } }
 
       it 'should support reading configuration from a yaml file' do
         expect(subject.access_key_id).to eq("1234")

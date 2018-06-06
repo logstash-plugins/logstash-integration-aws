@@ -1,8 +1,8 @@
 # encoding: utf-8
+require_relative "../s3_spec_helper"
 require "logstash/outputs/s3"
 require "stud/temporary"
 require "fileutils"
-require_relative "../../spec_helper"
 
 describe LogStash::Outputs::S3::FileRepository do
   let(:tags) { ["secret", "service"] }
