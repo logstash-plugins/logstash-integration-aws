@@ -1,29 +1,8 @@
 # Logstash Plugin
 
-[![Travis Build Status](https://travis-ci.org/logstash-plugins/logstash-input-s3.svg)](https://travis-ci.org/logstash-plugins/logstash-input-s3)
-
 This is a plugin for [Logstash](https://github.com/elastic/logstash).
 
 It is fully free and fully open source. The license is Apache 2.0, meaning you are pretty much free to use it however you want in whatever way.
-
-## Required S3 Permissions
-
-This plugin reads from your S3 bucket, and would require the following
-permissions applied to the AWS IAM Policy being used:
-
-* `s3:ListBucket` to check if the S3 bucket exists and list objects in it.
-* `s3:GetObject` to check object metadata and download objects from S3 buckets.
-
-You might also need `s3:DeleteObject` when setting S3 input to delete on read.
-And the `s3:CreateBucket` permission to create a backup bucket unless already
-exists.
-In addition, when `backup_to_bucket` is used, the `s3:PutObject` action is also required.
-
-For buckets that have versioning enabled, you might need to add additional
-permissions.
-
-More information about S3 permissions can be found at -
-  http://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html
 
 ## Documentation
 
