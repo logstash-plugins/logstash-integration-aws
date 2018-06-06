@@ -4,7 +4,7 @@ require "logstash/inputs/s3"
 require "logstash/codecs/multiline"
 require "logstash/errors"
 require "aws-sdk-resources"
-require_relative "../support/helpers"
+require_relative "support/helpers"
 require "stud/temporary"
 require "aws-sdk"
 require "fileutils"
@@ -361,7 +361,7 @@ describe LogStash::Inputs::S3 do
     end
 
     context "when event doesn't have a `message` field" do
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'json.log') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'json.log') }
       let(:config) {
         {
           "access_key_id" => "1234",
@@ -375,7 +375,7 @@ describe LogStash::Inputs::S3 do
     end
 
     context "when event does have a `message` field" do
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'json_with_message.log') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'json_with_message.log') }
       let(:config) {
         {
           "access_key_id" => "1234",
@@ -390,7 +390,7 @@ describe LogStash::Inputs::S3 do
 
     context "multiple compressed streams" do
       let(:log) { double(:key => 'log.gz', :last_modified => Time.now - 2 * day, :content_length => 5) }
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'multiple_compressed_streams.gz') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'multiple_compressed_streams.gz') }
 
       include_examples "generated events" do
         let(:events_to_process) { 16 }
@@ -399,26 +399,26 @@ describe LogStash::Inputs::S3 do
       
     context 'compressed' do
       let(:log) { double(:key => 'log.gz', :last_modified => Time.now - 2 * day, :content_length => 5) }
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'compressed.log.gz') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'compressed.log.gz') }
 
       include_examples "generated events"
     end
 
     context 'compressed with gzip extension' do
       let(:log) { double(:key => 'log.gz', :last_modified => Time.now - 2 * day, :content_length => 5) }
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'compressed.log.gzip') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'compressed.log.gzip') }
 
       include_examples "generated events"
     end
 
     context 'plain text' do
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'uncompressed.log') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'uncompressed.log') }
 
       include_examples "generated events"
     end
 
     context 'multi-line' do
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'multiline.log') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'multiline.log') }
        let(:config) {
            {
               "access_key_id" => "1234",
@@ -432,13 +432,13 @@ describe LogStash::Inputs::S3 do
     end
 
     context 'encoded' do
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'invalid_utf8.gbk.log') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'invalid_utf8.gbk.log') }
 
       include_examples "generated events"
     end
 
     context 'cloudfront' do
-      let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'cloudfront.log') }
+      let(:log_file) { File.join(File.dirname(__FILE__), 'fixtures', 'cloudfront.log') }
 
       it 'should extract metadata from cloudfront log' do
         events = fetch_events(config)
