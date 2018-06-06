@@ -1,5 +1,5 @@
 # encoding: utf-8
-require_relative "../s3_spec_helper"
+require_relative "spec_helper"
 require "logstash/outputs/s3"
 require "stud/temporary"
 require "fileutils"
