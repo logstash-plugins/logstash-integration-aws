@@ -3,7 +3,7 @@ Gem::Specification.new do |s|
   s.name            = 'logstash-integration-aws'
   s.version         = '1.0.0'
   s.licenses        = ['Apache-2.0']
-  s.summary         = "Integration with AWS. Input and output plugins"
+  s.summary         = "Collection of Logstash plugins that integrate with AWS"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
   s.authors         = ["Elastic"]
   s.email           = 'info@elastic.co'
@@ -34,5 +34,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency "logstash-codec-multiline"
   s.add_development_dependency 'logstash-input-generator'
   s.add_development_dependency 'logstash-codec-line'
-
 end
