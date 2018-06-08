@@ -1,4 +1,5 @@
 require "logstash/plugins/registry"
+require "logstash/codecs/cloudtrail"
 require "logstash/inputs/s3"
 require "logstash/inputs/sqs"
 require "logstash/outputs/cloudwatch"
@@ -6,6 +7,7 @@ require "logstash/outputs/s3"
 require "logstash/outputs/sns"
 require "logstash/outputs/sqs"
 
+LogStash::PLUGIN_REGISTRY.add(:codec, "cloudtrail", LogStash::Codecs::CloudTrail)
 LogStash::PLUGIN_REGISTRY.add(:input, "s3", LogStash::Inputs::S3)
 LogStash::PLUGIN_REGISTRY.add(:input, "sqs", LogStash::Inputs::SQS)
 LogStash::PLUGIN_REGISTRY.add(:output, "cloudwatch", LogStash::Outputs::Cloudwatch)
