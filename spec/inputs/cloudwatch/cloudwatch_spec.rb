@@ -4,18 +4,18 @@ require 'aws-sdk'
 
 describe LogStash::Inputs::CloudWatch do
   before do
-    AWS.stub!
+    Aws.config[:stub_responses] = true
     Thread.abort_on_exception = true
   end
 
   describe '#register' do
     let(:config) {
       {
-        'access_key_id' => '1234',
-        'secret_access_key' => 'secret',
-        'namespace' => 'AWS/EC2',
-        'filters' => { 'instance-id' => 'i-12344321' },
-        'region' => 'us-east-1'
+          'access_key_id' => '1234',
+          'secret_access_key' => LogStash::Util::Password.new('secret'),
+          'namespace' => 'AWS/EC2',
+          'filters' => { 'instance-id' => 'i-12344321' },
+          'region' => 'us-east-1'
       }
     }
     subject { LogStash::Inputs::CloudWatch.new(config) }
@@ -25,15 +25,16 @@ describe LogStash::Inputs::CloudWatch do
     end
   end
 
+
   context "EC2 events" do
     let(:config) {
       {
-        'access_key_id' => '1234',
-        'secret_access_key' => 'secret',
-        'namespace' => 'AWS/EC2',
-        'metrics' => [ 'CPUUtilization' ],
-        'filters' => { 'tag:Monitoring' => 'Yes' },
-        'region' => 'us-east-1'
+          'access_key_id' => '1234',
+          'secret_access_key' => 'secret',
+          'namespace' => 'AWS/EC2',
+          'metrics' => [ 'CPUUtilization' ],
+          'filters' => { 'tag:Monitoring' => 'Yes' },
+          'region' => 'us-east-1'
       }
     }
   end
@@ -41,12 +42,12 @@ describe LogStash::Inputs::CloudWatch do
   context "EBS events" do
     let(:config) {
       {
-        'access_key_id' => '1234',
-        'secret_access_key' => 'secret',
-        'namespace' => 'AWS/EBS',
-        'metrics' => [ 'VolumeQueueLength' ],
-        'filters' => { 'tag:Monitoring' => 'Yes' },
-        'region' => 'us-east-1'
+          'access_key_id' => '1234',
+          'secret_access_key' => 'secret',
+          'namespace' => 'AWS/EBS',
+          'metrics' => [ 'VolumeQueueLength' ],
+          'filters' => { 'tag:Monitoring' => 'Yes' },
+          'region' => 'us-east-1'
       }
     }
   end
@@ -54,12 +55,12 @@ describe LogStash::Inputs::CloudWatch do
   context "RDS events" do
     let(:config) {
       {
-        'access_key_id' => '1234',
-        'secret_access_key' => 'secret',
-        'namespace' => 'AWS/RDS',
-        'metrics' => [ 'CPUUtilization', 'CPUCreditUsage' ],
-        'filters' => { 'EngineName' => 'mysql' },
-        'region' => 'us-east-1'
+          'access_key_id' => '1234',
+          'secret_access_key' => 'secret',
+          'namespace' => 'AWS/RDS',
+          'metrics' => [ 'CPUUtilization', 'CPUCreditUsage' ],
+          'filters' => { 'EngineName' => 'mysql' },
+          'region' => 'us-east-1'
       }
     }
   end
