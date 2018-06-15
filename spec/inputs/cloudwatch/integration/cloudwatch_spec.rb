@@ -2,7 +2,7 @@ require "logstash/devutils/rspec/spec_helper"
 require "logstash/inputs/cloudwatch"
 require "aws-sdk"
 
-describe LogStash::Inputs::CloudWatch, :integration => true do
+describe LogStash::Inputs::CloudWatch, :integration => true, :inputs => true, :cloudwatch => true do
 
   let(:settings)  {  { "access_key_id" => ENV['AWS_ACCESS_KEY_ID'],
                        "secret_access_key" => LogStash::Util::Password.new(ENV['AWS_SECRET_ACCESS_KEY']),

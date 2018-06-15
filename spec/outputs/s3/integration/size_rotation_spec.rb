@@ -4,7 +4,7 @@ require "logstash/outputs/s3"
 require "logstash/codecs/line"
 require "stud/temporary"
 
-describe "Size rotation", :integration => true do
+describe "Size rotation", :integration => true, :s3 => true, :outputs => true do
   include_context "setup plugin"
 
   let(:event_size) { "Hello world".bytesize }

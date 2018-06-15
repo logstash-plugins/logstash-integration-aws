@@ -4,7 +4,7 @@ require "aws-sdk"
 require "fileutils"
 require_relative "../support/helpers"
 
-describe LogStash::Inputs::S3, :integration => true, :s3 => true do
+describe LogStash::Inputs::S3, :integration => true, :s3 => true, :inputs => true do
   before do
     Thread.abort_on_exception = true
 

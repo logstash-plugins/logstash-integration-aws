@@ -4,7 +4,7 @@ require "logstash/outputs/s3"
 require "logstash/codecs/line"
 require "stud/temporary"
 
-describe "Gzip Size rotation", :integration => true do
+describe "Gzip Size rotation", :integration => true, :s3 => true, :outputs => true do
   include_context "setup plugin"
 
   let(:document_size) { 20 * 1024 } # in bytes

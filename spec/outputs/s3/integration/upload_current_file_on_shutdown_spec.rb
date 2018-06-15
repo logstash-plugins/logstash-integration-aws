@@ -4,7 +4,7 @@ require "logstash/outputs/s3"
 require "logstash/codecs/line"
 require "stud/temporary"
 
-describe "Upload current file on shutdown", :integration => true do
+describe "Upload current file on shutdown", :integration => true, :s3 => true, :outputs => true do
   include_context "setup plugin"
   let(:options) { main_options }
 

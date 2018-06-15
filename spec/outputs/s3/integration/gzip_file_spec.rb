@@ -4,7 +4,7 @@ require "logstash/outputs/s3"
 require "logstash/codecs/line"
 require "stud/temporary"
 
-describe "Gzip File Time rotation with constant write", :integration => true do
+describe "Gzip File Time rotation with constant write", :integration => true, :s3 => true, :outputs => true do
   include_context "setup plugin"
 
   let(:time_file) { 0.004 }

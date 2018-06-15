@@ -5,7 +5,7 @@ require 'logstash/event'
 require 'logstash/json'
 require 'securerandom'
 
-describe LogStash::Outputs::SQS, :integration => true do
+describe LogStash::Outputs::SQS, :integration => true, :sqs => true, :outputs => true do
   let(:config) do
     {
       'queue' => @queue_name,

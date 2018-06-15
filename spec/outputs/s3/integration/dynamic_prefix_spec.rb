@@ -4,7 +4,7 @@ require "logstash/outputs/s3"
 require "logstash/codecs/line"
 require "stud/temporary"
 
-describe "Dynamic Prefix", :integration => true do
+describe "Dynamic Prefix", :integration => true, :s3 => true, :outputs => true do
   include_context "setup plugin"
 
   let(:options) { main_options.merge({ "rotation_strategy" => "size" }) }
