@@ -1,3 +1,7 @@
+## 6.0.0
+  - Removed obsolete fields `batch` and `batch_timeout`
+  - Removed workaround to JRuby bug (see more [here](https://github.com/jruby/jruby/issues/3645))
+
 ## 5.1.2
   - Added the ability to send to a different account id's queue. [#30](https://github.com/logstash-plugins/logstash-output-sqs/pull/30)
 

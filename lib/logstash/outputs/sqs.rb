@@ -4,7 +4,6 @@ require 'aws-sdk'
 require 'logstash/errors'
 require 'logstash/namespace'
 require 'logstash/outputs/base'
-require 'logstash/outputs/sqs/patch'
 require 'logstash/plugin_mixins/aws_config'
 
 Aws.eager_autoload!
@@ -70,13 +69,9 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
 
   concurrency :shared
 
-  config :batch, :validate => :boolean, :default => true, :obsolete => "This option is obsolete. Set 'batch_events' to `1` to disable batching"
-
   # The number of events to be sent in each batch. Set this to `1` to disable
   # the batch sending of messages.
   config :batch_events, :validate => :number, :default => 10
-
-  config :batch_timeout, :validate => :number, :obsolete => 'This setting is obsolete.'
 
   # The maximum number of bytes for any message sent to SQS. Messages exceeding
   # this size will be dropped. See
