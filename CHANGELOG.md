@@ -1,3 +1,6 @@
+## 6.0.1
+ - Added missing index entry for `queue_owner_aws_account_id` [#33](https://github.com/logstash-plugins/logstash-output-sqs/pull/33)
+
 ## 6.0.0
   - Removed obsolete fields `batch` and `batch_timeout`
   - Removed workaround to JRuby bug (see more [here](https://github.com/jruby/jruby/issues/3645))
