@@ -19,19 +19,12 @@ module LogStash::PluginMixins::AwsConfig::V2
 
     opts[:http_proxy] = @proxy_uri if @proxy_uri
 
-    # The AWS SDK for Ruby doesn't know how to make an endpoint hostname from a region
-    # for example us-west-1 -> foosvc.us-west-1.amazonaws.com
-    # So our plugins need to know how to generate their endpoints from a region
-    # Furthermore, they need to know the symbol required to set that value in the AWS SDK
-    # Classes using this module must implement aws_service_endpoint(region:string)
-    # which must return a hash with one key, the aws sdk for ruby config symbol of the service
-    # endpoint, which has a string value of the service endpoint hostname
-    # for example, CloudWatch, { :cloud_watch_endpoint => "monitoring.#{region}.amazonaws.com" }
-    # For a list, see https://github.com/aws/aws-sdk-ruby/blob/master/lib/aws/core/configuration.rb
     if self.respond_to?(:aws_service_endpoint)
+      # used by CloudWatch to basically do the same as bellow (returns { region: region })
       opts.merge!(self.aws_service_endpoint(@region))
     else
-      opts.merge!({ :region => @region })
+      # NOTE: setting :region works with the aws sdk (resolves correct endpoint)
+      opts[:region] = @region
     end
 
     if !@endpoint.is_a?(NilClass)
