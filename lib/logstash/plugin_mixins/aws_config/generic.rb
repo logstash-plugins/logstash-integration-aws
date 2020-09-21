@@ -10,7 +10,7 @@ module LogStash::PluginMixins::AwsConfig::Generic
 
     # This plugin uses the AWS SDK and supports several ways to get credentials, which will be tried in this order:
     #
-    # 1. Static configuration, using `access_key_id` and `secret_access_key` params or `role_arn` in the logstash plugin config
+    # 1. Static configuration, using `access_key_id` and `secret_access_key` params in the logstash plugin config
     # 2. External credentials file specified by `aws_credentials_file`
     # 3. Environment variables `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
     # 4. Environment variables `AMAZON_ACCESS_KEY_ID` and `AMAZON_SECRET_ACCESS_KEY`
@@ -32,6 +32,7 @@ module LogStash::PluginMixins::AwsConfig::Generic
     # The AWS IAM Role to assume, if any.
     # This is used to generate temporary credentials typically for cross-account access.
     # See https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html for more information.
+    # When `role_arn` is set, AWS (`access_key_id`/`secret_access_key`) credentials still get used if they're configured.
     config :role_arn, :validate => :string
 
     # Session name to use when assuming an IAM role

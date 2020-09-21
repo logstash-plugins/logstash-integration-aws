@@ -1,3 +1,7 @@
+## 4.4.0
+  -  Fix: credentials/proxy with assumed role [#48](https://github.com/logstash-plugins/logstash-mixin-aws/pull/48).
+     Plugin no longer assumes `access_key_id`/`secret_access_key` credentials not to be set when `role_arn` specified.
+
 ## 4.3.0
   - Drop strict value validation for region option #36
   - Add endpoint option to customize the endpoint uri #32

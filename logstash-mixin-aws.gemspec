@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name            = 'logstash-mixin-aws'
-  s.version         = '4.3.0'
+  s.version         = '4.4.0'
   s.licenses        = ['Apache License (2.0)']
   s.summary         = "AWS mixins to provide a unified interface for Amazon Webservice"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
