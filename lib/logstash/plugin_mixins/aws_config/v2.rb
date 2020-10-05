@@ -14,8 +14,8 @@ module LogStash::PluginMixins::AwsConfig::V2
     opts[:http_proxy] = @proxy_uri if @proxy_uri
 
     if @role_arn
-      credentials = assume_role(opts)
-      opts = { :credentials => credentials }
+      credentials = assume_role(opts.dup)
+      opts[:credentials] = credentials
     else
       credentials = aws_credentials
       opts[:credentials] = credentials if credentials

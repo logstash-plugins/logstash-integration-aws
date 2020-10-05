@@ -226,6 +226,10 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
           expect( subject.client.config.region ).to eql 'us-west-2' # probably redundant (kept for backwards compat)
         end
 
+        it 'sets up proxy top level' do # setting in on the client isn't enough!
+          expect( aws_options_hash[:http_proxy] ).to eql 'http://a-proxy.net:1234'
+        end
+
         it 'sets up region top-level' do
           # NOTE: this one is required for real with role_arn :
           expect( aws_options_hash[:region] ).to eql 'us-west-2'

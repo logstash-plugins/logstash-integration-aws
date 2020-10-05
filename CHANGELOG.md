@@ -1,3 +1,6 @@
+## 4.4.1
+  -  Fix: proxy with assumed role (properly) [#50](https://github.com/logstash-plugins/logstash-mixin-aws/pull/50).
+
 ## 4.4.0
   -  Fix: credentials/proxy with assumed role [#48](https://github.com/logstash-plugins/logstash-mixin-aws/pull/48).
      Plugin no longer assumes `access_key_id`/`secret_access_key` credentials not to be set when `role_arn` specified.
