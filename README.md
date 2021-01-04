@@ -1,6 +1,6 @@
 # Logstash Plugin
 
-[![Travis Build Status](https://travis-ci.org/logstash-plugins/logstash-output-sns.svg)](https://travis-ci.org/logstash-plugins/logstash-output-sns)
+[![Travis Build Status](https://travis-ci.com/logstash-plugins/logstash-output-sns.svg)](https://travis-ci.com/logstash-plugins/logstash-output-sns)
 
 This is a plugin for [Logstash](https://github.com/elastic/logstash).
 
