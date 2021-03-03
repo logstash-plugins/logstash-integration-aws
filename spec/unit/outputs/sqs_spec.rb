@@ -21,7 +21,7 @@ describe LogStash::Outputs::SQS do
 
   describe '#register' do
     context 'with a batch size that is too large' do
-      let(:config) { super.merge('batch_events' => 100) }
+      let(:config) { super().merge('batch_events' => 100) }
 
       before do
         allow(Aws::SQS::Client).to receive(:new).and_return(sqs)
@@ -33,7 +33,7 @@ describe LogStash::Outputs::SQS do
     end
 
     context 'with a batch size that is too small' do
-      let(:config) { super.merge('batch_events' => 0) }
+      let(:config) { super().merge('batch_events' => 0) }
 
       before do
         allow(Aws::SQS::Client).to receive(:new).and_return(sqs)
@@ -99,7 +99,7 @@ describe LogStash::Outputs::SQS do
 
     context 'with batching disabled' do
       let(:config) do
-        super.merge({
+        super().merge({
           'batch_events' => 1,
         })
       end
@@ -118,7 +118,7 @@ describe LogStash::Outputs::SQS do
     context 'with batching enabled' do
       let(:batch_events) { 3 }
       let(:config) do
-        super.merge({
+        super().merge({
           'batch_events' => batch_events,
         })
       end
@@ -164,7 +164,7 @@ describe LogStash::Outputs::SQS do
     end
 
     context 'with event exceeding maximum size' do
-      let(:config) { super.merge('message_max_size' => message_max_size) }
+      let(:config) { super().merge('message_max_size' => message_max_size) }
       let(:message_max_size) { 1024 }
 
       let(:sample_count) { 1 }
@@ -182,7 +182,7 @@ describe LogStash::Outputs::SQS do
     context 'with large batch' do
       let(:batch_events) { 4 }
       let(:config) do
-        super.merge({
+        super().merge({
           'batch_events' => batch_events,
           'message_max_size' => message_max_size,
         })

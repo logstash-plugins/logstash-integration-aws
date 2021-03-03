@@ -28,7 +28,7 @@ describe LogStash::Outputs::SQS, :integration => true do
   describe '#register' do
     context 'with invalid credentials' do
       let(:config) do
-        super.merge({
+        super().merge({
           'access_key_id' => 'bad_access',
           'secret_access_key' => 'bad_secret_key',
         })
@@ -40,7 +40,7 @@ describe LogStash::Outputs::SQS, :integration => true do
     end
 
     context 'with a nonexistent queue' do
-      let(:config) { super.merge('queue' => 'nonexistent-queue') }
+      let(:config) { super().merge('queue' => 'nonexistent-queue') }
 
       it 'raises a configuration error' do
         expect { subject.register }.to raise_error(LogStash::ConfigurationError)
@@ -48,7 +48,7 @@ describe LogStash::Outputs::SQS, :integration => true do
     end
 
     context 'with a nonpermissive account id' do
-      let(:config) { super.merge('queue_owner_aws_account_id' => '123456789012')}
+      let(:config) { super().merge('queue_owner_aws_account_id' => '123456789012')}
 
       it 'raises a configuration error' do
         expect { subject.register }.to raise_error(LogStash::ConfigurationError)
@@ -80,7 +80,7 @@ describe LogStash::Outputs::SQS, :integration => true do
     end
 
     context 'with batching disabled' do
-      let(:config) { super.merge('batch_events' => 1) }
+      let(:config) { super().merge('batch_events' => 1) }
 
       it 'publishes to SQS' do
         subject.multi_receive_encoded(sample_events)
