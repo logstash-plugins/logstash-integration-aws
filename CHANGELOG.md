@@ -1,3 +1,6 @@
+## 5.0.0
+  - Drop support for aws-sdk-v1
+
 ## 4.4.1
   -  Fix: proxy with assumed role (properly) [#50](https://github.com/logstash-plugins/logstash-mixin-aws/pull/50).
 
