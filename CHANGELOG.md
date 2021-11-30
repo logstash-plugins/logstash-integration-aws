@@ -1,3 +1,6 @@
+## 4.0.8
+  - Feat: handle host object as subject (due ECS) [#22](https://github.com/logstash-plugins/logstash-output-sns/pull/22) 
+
 ## 4.0.7
   - Docs: Set the default_codec doc attribute.
 

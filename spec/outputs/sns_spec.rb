@@ -84,6 +84,24 @@ describe LogStash::Outputs::Sns do
       expect(subject.send(:event_subject, event)).to eql("foo")
     end
 
+    it "should return the host name (ECS compatibility) if 'sns_subject' not set" do
+      event = LogStash::Event.new
+      event.set('[host][hostname]', 'server1')
+      expect(subject.send(:event_subject, event)).to eql('server1')
+    end
+
+    it "should return the host IP (ECS compatibility) if 'sns_subject' not set" do
+      event = LogStash::Event.new
+      event.set('host.geo.name', 'Vychodne Pobrezie')
+      expect(subject.send(:event_subject, event)).to eql(LogStash::Outputs::Sns::NO_SUBJECT)
+    end
+
+    it "should return no subject when no info in host object (ECS compatibility) if 'sns_subject' not set" do
+      event = LogStash::Event.new
+      event.set('[host][ip]', '192.168.1.111')
+      expect(subject.send(:event_subject, event)).to eql('192.168.1.111')
+    end
+
     it "should return 'NO SUBJECT' when subject cannot be determined" do
       event = LogStash::Event.new("foo" => "bar")
       expect(subject.send(:event_subject, event)).to eql(LogStash::Outputs::Sns::NO_SUBJECT)

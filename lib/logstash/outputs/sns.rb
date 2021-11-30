@@ -115,7 +115,12 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
     elsif sns_subject
       LogStash::Json.dump(sns_subject)
     elsif event.get("host")
-      event.get("host")
+      host = event.get("host")
+      if host.is_a?(Hash) # ECS mode
+        host['name'] || host['hostname'] || host['ip'] || NO_SUBJECT
+      else
+        host.to_s
+      end
     else
       NO_SUBJECT
     end
