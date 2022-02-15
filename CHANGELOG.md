@@ -1,3 +1,6 @@
+## 5.1.0
+  - Add support for 'addition_settings' configuration options used by S3 and SQS input plugins [#53](https://github.com/logstash-plugins/logstash-mixin-aws/pull/53).
+
 ## 5.0.0
   - Drop support for aws-sdk-v1
 

@@ -31,6 +31,10 @@ module LogStash::PluginMixins::AwsConfig::V2
 
     opts[:endpoint] = @endpoint unless @endpoint.nil?
 
+    if respond_to?(:additional_settings)
+      opts = symbolize_keys_and_cast_true_false(additional_settings).merge(opts)
+    end
+
     return opts
   end
 
@@ -70,4 +74,20 @@ module LogStash::PluginMixins::AwsConfig::V2
         :role_session_name => @role_session_name
     )
   end
+
+  def symbolize_keys_and_cast_true_false(hash)
+    case hash
+    when Hash
+      symbolized = {}
+      hash.each { |key, value| symbolized[key.to_sym] = symbolize_keys_and_cast_true_false(value) }
+      symbolized
+    when 'true'
+      true
+    when 'false'
+      false
+    else
+      hash
+    end
+  end
+
 end
