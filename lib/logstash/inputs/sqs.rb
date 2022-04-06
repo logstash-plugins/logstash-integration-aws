@@ -103,7 +103,7 @@ class LogStash::Inputs::SQS < LogStash::Inputs::Threadable
   attr_reader :poller
 
   def register
-    require "aws-sdk"
+    require "aws-sdk-core"
     @logger.info("Registering SQS input", :queue => @queue, :queue_owner_aws_account_id => @queue_owner_aws_account_id)
 
     setup_queue

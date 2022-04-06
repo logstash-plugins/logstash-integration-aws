@@ -11,7 +11,7 @@ require "tmpdir"
 require "fileutils"
 require "set"
 require "pathname"
-require "aws-sdk"
+require "aws-sdk-core"
 require "logstash/outputs/s3/patch"
 
 Aws.eager_autoload!

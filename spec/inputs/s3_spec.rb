@@ -7,7 +7,7 @@ require "logstash/errors"
 require "aws-sdk-resources"
 require "stud/temporary"
 require_relative "../support/helpers"
-require "aws-sdk"
+require "aws-sdk-core"
 require "fileutils"
 require 'logstash/plugin_mixins/ecs_compatibility_support/spec_helper'
 

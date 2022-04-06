@@ -7,7 +7,7 @@ require "date"
 require "tmpdir"
 require "stud/interval"
 require "stud/temporary"
-require "aws-sdk"
+require "aws-sdk-s3"
 require "logstash/inputs/s3/patch"
 require "logstash/plugin_mixins/ecs_compatibility_support"
 

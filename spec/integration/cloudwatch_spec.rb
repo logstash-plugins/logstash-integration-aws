@@ -1,6 +1,6 @@
 require "logstash/devutils/rspec/spec_helper"
 require "logstash/inputs/cloudwatch"
-require "aws-sdk"
+require "aws-sdk-core"
 
 describe LogStash::Inputs::CloudWatch, :integration => true do
 
