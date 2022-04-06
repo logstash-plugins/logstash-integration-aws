@@ -4,7 +4,7 @@ require 'logstash/outputs/sns'
 require 'logstash/event'
 require "logstash/plugin_mixins/aws_config"
 
-require "aws-sdk-core" # TODO: Why is this not automatically brought in by the aws_config plugin?
+require "aws-sdk-sns" # TODO: Why is this not automatically brought in by the aws_config plugin?
 
 describe LogStash::Outputs::Sns do
   let(:arn) { "arn:aws:sns:us-east-1:999999999:logstash-test-sns-topic" }

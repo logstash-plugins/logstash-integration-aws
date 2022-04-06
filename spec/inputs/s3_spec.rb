@@ -4,10 +4,10 @@ require "logstash/devutils/rspec/shared_examples"
 require "logstash/inputs/s3"
 require "logstash/codecs/multiline"
 require "logstash/errors"
-require "aws-sdk-resources"
+#require "aws-sdk-resources"
 require "stud/temporary"
 require_relative "../support/helpers"
-require "aws-sdk-core"
+#require "aws-sdk-core"
 require "fileutils"
 require 'logstash/plugin_mixins/ecs_compatibility_support/spec_helper'
 
