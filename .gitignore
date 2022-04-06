@@ -1,0 +1,10 @@
+*.gem
+Gemfile.lock
+.bundle
+vendor
+coverage/
+.idea/*
+.ruby-version
+.github/
+.gradle/
+.rakeTasks
