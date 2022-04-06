@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-require 'aws-sdk-core'
+require 'aws-sdk-sqs'
 require 'logstash/errors'
 require 'logstash/namespace'
 require 'logstash/outputs/base'
