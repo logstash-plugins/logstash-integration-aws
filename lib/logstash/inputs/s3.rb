@@ -8,12 +8,10 @@ require "tmpdir"
 require "stud/interval"
 require "stud/temporary"
 require "aws-sdk-s3"
-require "logstash/inputs/s3/patch"
 require "logstash/plugin_mixins/ecs_compatibility_support"
 
 require 'java'
 
-Aws.eager_autoload!
 # Stream events from files from a S3 bucket.
 #
 # Each line from each file generates an event.

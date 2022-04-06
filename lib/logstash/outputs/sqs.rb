@@ -6,8 +6,6 @@ require 'logstash/namespace'
 require 'logstash/outputs/base'
 require 'logstash/plugin_mixins/aws_config'
 
-Aws.eager_autoload!
-
 # Push events to an Amazon Web Services (AWS) Simple Queue Service (SQS) queue.
 #
 # SQS is a simple, scalable queue system that is part of the Amazon Web
