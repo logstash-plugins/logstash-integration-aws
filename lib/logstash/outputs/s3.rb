@@ -11,7 +11,7 @@ require "tmpdir"
 require "fileutils"
 require "set"
 require "pathname"
-require "aws-sdk-core"
+require "aws-sdk-s3"
 
 # INFORMATION:
 #
