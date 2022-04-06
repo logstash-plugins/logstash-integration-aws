@@ -1,6 +1,6 @@
 # Logstash Plugin
 
-[![Travis Build Status](https://travis-ci.com/logstash-plugins/logstash-codec-cloudfront.svg)](https://travis-ci.com/logstash-plugins/logstash-codec-cloudfront)
+    [![Travis Build Status](https://travis-ci.com/logstash-plugins/logstash-integration-aws.svg)](https://travis-ci.com/logstash-plugins/logstash-integration-aws)
 
 This is a plugin for [Logstash](https://github.com/elastic/logstash).
 
@@ -194,3 +194,12 @@ permissions.
 More information about S3 permissions can be found at -
   http://docs.aws.amazon.com/AmazonS3/latest/dev/using-with-s3-actions.html
 
+
+## Running tests
+
+If you want to run the integration test against a real bucket you need to pass
+your aws credentials to the test runner or declare it in your environment.
+
+```
+AWS_REGION=us-east-1 AWS_ACCESS_KEY_ID=123 AWS_SECRET_ACCESS_KEY=secret AWS_LOGSTASH_TEST_BUCKET=mytest bundle exec rspec spec/integration/s3_spec.rb --tag integration
+```
