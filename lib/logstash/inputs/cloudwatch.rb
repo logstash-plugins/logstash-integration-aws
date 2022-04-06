@@ -4,7 +4,7 @@ require "logstash/namespace"
 require "logstash/plugin_mixins/aws_config"
 require "logstash/util"
 require "stud/interval"
-require "aws-sdk"
+require "aws-sdk-cloudwatch"
 
 # Pull events from the Amazon Web Services CloudWatch API.
 #

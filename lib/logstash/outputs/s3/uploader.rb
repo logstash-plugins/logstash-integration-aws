@@ -1,6 +1,6 @@
 # encoding: utf-8
 require "logstash/util"
-require "aws-sdk"
+require "aws-sdk-core"
 
 module LogStash
   module Outputs
