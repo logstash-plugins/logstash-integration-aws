@@ -3,7 +3,6 @@ require "spec_helper"
 require "logstash/inputs/sqs"
 require "logstash/event"
 require "logstash/json"
-require "aws-sdk-core"
 require_relative "../support/helpers"
 require "thread"
 

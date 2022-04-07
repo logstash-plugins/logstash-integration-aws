@@ -1,7 +1,6 @@
 # encoding: utf-8
 require "logstash/devutils/rspec/spec_helper"
 require "logstash/plugin_mixins/aws_config"
-require 'aws-sdk-core'
 require 'timecop'
 
 class DummyInputAwsConfigV2 < LogStash::Inputs::Base

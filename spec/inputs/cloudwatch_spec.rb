@@ -1,7 +1,6 @@
 require 'logstash/devutils/rspec/spec_helper'
 require 'logstash/devutils/rspec/shared_examples'
 require 'logstash/inputs/cloudwatch'
-require 'aws-sdk-core'
 
 describe LogStash::Inputs::CloudWatch do
   subject { LogStash::Inputs::CloudWatch.new(config) }
