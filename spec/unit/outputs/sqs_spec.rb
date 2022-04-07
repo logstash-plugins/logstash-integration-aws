@@ -194,7 +194,7 @@ describe LogStash::Outputs::SQS do
         # overhead is caused by metadata (such as the `message` field name and
         # the `@timestamp` field) as well as additional characters as a result
         # of encoding the event.
-        overhead = 69
+        overhead = 90
 
         events = [
           LogStash::Event.new('message' => 'a' * (0.6 * message_max_size - overhead)),
