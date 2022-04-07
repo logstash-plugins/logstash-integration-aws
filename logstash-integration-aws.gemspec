@@ -41,7 +41,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "aws-sdk-cloudwatch"
   s.add_runtime_dependency "aws-sdk-cloudfront"
   s.add_runtime_dependency "aws-sdk-resourcegroups"
-#  s.add_runtime_dependency "aws-sdk-resources"
 
   s.add_development_dependency "logstash-codec-json_lines"
   s.add_development_dependency "logstash-codec-multiline"
