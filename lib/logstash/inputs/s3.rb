@@ -97,7 +97,6 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
   def register
     require "fileutils"
     require "digest/md5"
-    #require "aws-sdk-resources"
 
     @logger.info("Registering", :bucket => @bucket, :region => @region)
 
