@@ -1,3 +1,4 @@
+:integration: aws
 :plugin: sqs
 :type: input
 :default_codec: json
@@ -17,7 +18,7 @@ END - GENERATED VARIABLES, DO NOT EDIT!
 
 === Sqs input plugin
 
-include::{include_path}/plugin_header.asciidoc[]
+include::{include_path}/plugin_header-integration.asciidoc[]
 
 ==== Description
 
