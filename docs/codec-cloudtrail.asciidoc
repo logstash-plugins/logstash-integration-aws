@@ -1,3 +1,4 @@
+:integration: aws
 :plugin: cloudtrail
 :type: codec
 
@@ -16,7 +17,7 @@ END - GENERATED VARIABLES, DO NOT EDIT!
 
 === Cloudtrail codec plugin
 
-include::{include_path}/plugin_header.asciidoc[]
+include::{include_path}/plugin_header-integration.asciidoc[]
 
 ==== Description
 
