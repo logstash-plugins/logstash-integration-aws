@@ -7,10 +7,25 @@ Gem::Specification.new do |s|
   s.authors         = ["Elastic"]
   s.email           = "info@elastic.co"
   s.homepage        = "http://www.elastic.co/guide/en/logstash/current/index.html"
-  s.metadata        = { "logstash_plugin" => "true", "logstash_group" => "integration" }
+  s.metadata        = {
+    "logstash_plugin" => "true",
+    "logstash_group" => "integration",
+    "integration_plugins" => %w(
+      logstash-codec-cloudfront
+      logstash-codec-cloudtrail
+      logstash-input-cloudwatch
+      logstash-input-s3
+      logstash-input-sqs
+      logstash-mixin-aws
+      logstash-output-cloudwatch
+      logstash-output-s3
+      logstash-output-sns
+      logstash-output-sqs).join(",")
+  }
+
 
   s.require_paths   = ["lib"]
-  s.files = Dir["lib/**/*","spec/**/*","*.gemspec","*.md","CONTRIBUTORS","Gemfile","LICENSE","NOTICE.TXT", "vendor/jar-dependencies/**/*.jar", "vendor/jar-dependencies/**/*.rb", "VERSION", "docs/**/*"]
+  s.files = Dir["lib/**/*","spec/**/*","*.gemspec","*.md","CONTRIBUTORS","Gemfile","LICENSE","NOTICE.TXT", "VERSION", "docs/**/*"]
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 
   s.add_runtime_dependency "logstash-core-plugin-api", ">= 2.1.12", "<= 2.99"
