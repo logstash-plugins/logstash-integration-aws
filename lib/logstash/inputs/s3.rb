@@ -7,13 +7,11 @@ require "date"
 require "tmpdir"
 require "stud/interval"
 require "stud/temporary"
-require "aws-sdk"
-require "logstash/inputs/s3/patch"
+require "aws-sdk-s3"
 require "logstash/plugin_mixins/ecs_compatibility_support"
 
 require 'java'
 
-Aws.eager_autoload!
 # Stream events from files from a S3 bucket.
 #
 # Each line from each file generates an event.
@@ -99,7 +97,6 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
   def register
     require "fileutils"
     require "digest/md5"
-    require "aws-sdk-resources"
 
     @logger.info("Registering", :bucket => @bucket, :region => @region)
 

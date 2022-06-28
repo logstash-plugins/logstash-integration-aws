@@ -56,7 +56,7 @@ class LogStash::Outputs::Sns < LogStash::Outputs::Base
 
   public
   def register
-    require "aws-sdk-resources"
+    require "aws-sdk-sns"
 
     @sns = Aws::SNS::Client.new(aws_options_hash)
 

@@ -1,12 +1,10 @@
 # encoding: utf-8
 
-require 'aws-sdk'
+require 'aws-sdk-sqs'
 require 'logstash/errors'
 require 'logstash/namespace'
 require 'logstash/outputs/base'
 require 'logstash/plugin_mixins/aws_config'
-
-Aws.eager_autoload!
 
 # Push events to an Amazon Web Services (AWS) Simple Queue Service (SQS) queue.
 #

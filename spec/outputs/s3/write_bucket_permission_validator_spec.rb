@@ -1,7 +1,6 @@
 # encoding: utf-8
 require "logstash/devutils/rspec/spec_helper"
 require "logstash/outputs/s3/write_bucket_permission_validator"
-require "aws-sdk"
 
 describe LogStash::Outputs::S3::WriteBucketPermissionValidator do
   let(:logger) { spy(:logger ) }
