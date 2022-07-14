@@ -1,4 +1,4 @@
-## 1.0.0
+## 0.1.0
 
 * Added the initial set of Logstash AWS plugins that ship with Logstash.
   You can find the merged changelog of the individual plugins in CHANGELOG.PRE.MERGE.md.
