@@ -1,3 +1,6 @@
+## 0.1.1
+  - remove mention of mixin in gemspec to facilitate docs publishing
+
 ## 0.1.0
 
 * Added the initial set of Logstash AWS plugins that ship with Logstash.
