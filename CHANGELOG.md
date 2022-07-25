@@ -1,3 +1,7 @@
+## 7.0.0
+  - bump integration to upper bound of all underlying plugins versions (biggest is sqs output 6.x)
+  - this is necessary to facilitate versioning continuity between older standalone plugins and plugins within the integration
+
 ## 0.1.1
   - remove mention of mixin in gemspec to facilitate docs publishing
 
