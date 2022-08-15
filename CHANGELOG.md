@@ -1,5 +1,5 @@
 ## 7.0.1
-  - [Doc] explain role_arn setting
+  - [Doc] explain role_arn setting [#14](https://github.com/logstash-plugins/logstash-integration-aws/pull/14)
   
 ## 7.0.0
   - bump integration to upper bound of all underlying plugins versions (biggest is sqs output 6.x)
