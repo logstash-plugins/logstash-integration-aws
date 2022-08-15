@@ -1,3 +1,6 @@
+## 7.0.1
+  - [Doc] explain role_arn setting
+  
 ## 7.0.0
   - bump integration to upper bound of all underlying plugins versions (biggest is sqs output 6.x)
   - this is necessary to facilitate versioning continuity between older standalone plugins and plugins within the integration

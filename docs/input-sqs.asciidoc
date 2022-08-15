@@ -238,6 +238,7 @@ The AWS Region
 The AWS IAM Role to assume, if any.
 This is used to generate temporary credentials, typically for cross-account access.
 See the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[AssumeRole API documentation] for more information.
+To use this feature, set `role_session_name`, remove `access_key_id` and `secret_access_key`, and use the aws credentials to setup the aws default profile for the primary account in the server.
 
 [id="plugins-{type}s-{plugin}-role_session_name"]
 ===== `role_session_name`
@@ -245,7 +246,7 @@ See the https://docs.aws.amazon.com/STS/latest/APIReference/API_AssumeRole.html[
   * Value type is <<string,string>>
   * Default value is `"logstash"`
 
-Session name to use when assuming an IAM role.
+Session name to use when assuming an IAM role. This is required for `role_arn`.
 
 [id="plugins-{type}s-{plugin}-secret_access_key"]
 ===== `secret_access_key` 
