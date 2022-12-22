@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name            = "logstash-integration-aws"
-  s.version         = "7.0.0"
+  s.version         = "7.0.1"
   s.licenses        = ["Apache-2.0"]
   s.summary         = "Collection of Logstash plugins that integrate with AWS"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
