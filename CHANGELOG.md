@@ -1,5 +1,5 @@
 ## 7.0.1
-  - resolves two closely-related race conditions in the S3 Output plugin's handling of stale temporary files that could cause plugin crashes or data-loss
+  - resolves two closely-related race conditions in the S3 Output plugin's handling of stale temporary files that could cause plugin crashes or data-loss [#19](https://github.com/logstash-plugins/logstash-integration-aws/pull/19)
     - prevents a `No such file or directory` crash that could occur when a temporary file is accessed after it has been detected as stale (empty+old) and deleted.
     - prevents a possible deletion of a non-empty temporary file that could occur if bytes were written to it _after_ it was detected as stale (empty+old) and _before_ the deletion completed.
 
