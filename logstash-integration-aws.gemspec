@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name            = "logstash-integration-aws"
-  s.version         = "7.0.1"
+  s.version         = "7.1.0"
   s.licenses        = ["Apache-2.0"]
   s.summary         = "Collection of Logstash plugins that integrate with AWS"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
   }
 
 
-  s.require_paths   = ["lib"]
+  s.require_paths   = ["lib", "vendor/jar-dependencies"]
   s.files = Dir["lib/**/*","spec/**/*","*.gemspec","*.md","CONTRIBUTORS","Gemfile","LICENSE","NOTICE.TXT", "VERSION", "docs/**/*"]
   s.test_files = s.files.grep(%r{^(test|spec|features)/})
 

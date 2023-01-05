@@ -14,11 +14,11 @@ describe LogStash::Outputs::S3::TimeRotationPolicy do
   let(:file) { LogStash::Outputs::S3::TemporaryFile.new(name, temporary_file, temporary_directory) }
 
   it "raises an exception if the `file_time` is set to 0" do
-    expect { described_class.new(0) }.to raise_error(LogStash::ConfigurationError, /`time_file` need to be greather than 0/)
+    expect { described_class.new(0) }.to raise_error(LogStash::ConfigurationError, /`time_file` need to be greater than 0/)
   end
 
   it "raises an exception if the `file_time` is < 0" do
-    expect { described_class.new(-100) }.to raise_error(LogStash::ConfigurationError, /`time_file` need to be greather than 0/)
+    expect { described_class.new(-100) }.to raise_error(LogStash::ConfigurationError, /`time_file` need to be greater than 0/)
   end
 
   context "when the size of the file is superior to 0" do

@@ -1,3 +1,6 @@
+## 7.1.0
+  - Plugin restores and uploads corrupted GZIP files (caused by abnormal termination) to AWS S3 [#N](https://github.com/logstash-plugins/logstash-integration-aws/pull/N)
+
 ## 7.0.1
   - resolves two closely-related race conditions in the S3 Output plugin's handling of stale temporary files that could cause plugin crashes or data-loss [#19](https://github.com/logstash-plugins/logstash-integration-aws/pull/19)
     - prevents a `No such file or directory` crash that could occur when a temporary file is accessed after it has been detected as stale (empty+old) and deleted.

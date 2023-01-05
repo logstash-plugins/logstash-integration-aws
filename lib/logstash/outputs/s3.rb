@@ -94,6 +94,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
                                                                    :fallback_policy => :caller_runs
                                                                  })
 
+  GZIP_ENCODING = "gzip"
 
   config_name "s3"
   default :codec, "line"
@@ -107,7 +108,8 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
 
   # Set the size of file in bytes, this means that files on bucket when have dimension > file_size, they are stored in two or more file.
   # If you have tags then it will generate a specific size file for every tags
-  ##NOTE: define size of file is the better thing, because generate a local temporary file on disk and then put it in bucket.
+  #
+  # NOTE: define size of file is the better thing, because generate a local temporary file on disk and then put it in bucket.
   config :size_file, :validate => :number, :default => 1024 * 1024 * 5
 
   # Set the time, in MINUTES, to close the current sub_time_section of bucket.
@@ -115,10 +117,10 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   # If it's valued 0 and rotation_strategy is 'time' or 'size_and_time' then the plugin reaise a configuration error.
   config :time_file, :validate => :number, :default => 15
 
-  ## IMPORTANT: if you use multiple instance of s3, you should specify on one of them the "restore=> true" and on the others "restore => false".
-  ## This is hack for not destroy the new files after restoring the initial files.
-  ## If you do not specify "restore => true" when logstash crashes or is restarted, the files are not sent into the bucket,
-  ## for example if you have single Instance.
+  # If `restore => false` is specified and Logstash crashes, the unprocessed files are not sent into the bucket.
+  #
+  # NOTE: that the `recovery => true` default assumes multiple S3 outputs would set a unique `temporary_directory => ...`
+  # if they do not than only a single S3 output is safe to recover (since let-over files are processed and deleted).
   config :restore, :validate => :boolean, :default => true
 
   # The S3 canned ACL to use when putting the file. Defaults to "private".
@@ -144,6 +146,9 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
 
   # Set the directory where logstash will store the tmp files before sending it to S3
   # default to the current OS temporary directory in linux /tmp/logstash
+  #
+  # NOTE: the reason we do not have a unique (isolated) temporary directory as a default, to support multiple plugin instances,
+  # is that we would have to rely on something static that does not change between restarts (e.g. a user set id => ...).
   config :temporary_directory, :validate => :string, :default => File.join(Dir.tmpdir, "logstash")
 
   # Specify a prefix to the uploaded filename, this can simulate directories on S3.  Prefix does not require leading slash.
@@ -174,7 +179,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   config :tags, :validate => :array, :default => []
 
   # Specify the content encoding. Supports ("gzip"). Defaults to "none"
-  config :encoding, :validate => ["none", "gzip"], :default => "none"
+  config :encoding, :validate => ["none", GZIP_ENCODING], :default => "none"
 
   # Define the strategy to use to decide when we need to rotate the file and push it to S3,
   # The default strategy is to check for both size and time, the first one to match will rotate the file.
@@ -308,7 +313,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
       :server_side_encryption => @server_side_encryption ? @server_side_encryption_algorithm : nil,
       :ssekms_key_id => @server_side_encryption_algorithm == "aws:kms" ? @ssekms_key_id : nil,
       :storage_class => @storage_class,
-      :content_encoding => @encoding == "gzip" ? "gzip" : nil,
+      :content_encoding => @encoding == GZIP_ENCODING ? GZIP_ENCODING : nil,
       :multipart_threshold => @upload_multipart_threshold
     }
   end
@@ -336,27 +341,28 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   end
 
   def rotate_if_needed(prefixes)
-
     # Each file access is thread safe,
     # until the rotation is done then only
     # one thread has access to the resource.
     @file_repository.each_factory(prefixes) do |factory|
+      # we have exclusive access to the one-and-only
+      # prefix WRAPPER for this factory.
       temp_file = factory.current
 
       if @rotation.rotate?(temp_file)
-        @logger.debug("Rotate file",
-                      :strategy => @rotation.class.name,
-                      :key => temp_file.key,
-                      :path => temp_file.path)
+        @logger.debug? && @logger.debug("Rotate file",
+                                        :key => temp_file.key,
+                                        :path => temp_file.path,
+                                        :strategy => @rotation.class.name)
 
-        upload_file(temp_file)
+        upload_file(temp_file) # may be async or blocking
         factory.rotate!
       end
     end
   end
 
   def upload_file(temp_file)
-    @logger.debug("Queue for upload", :path => temp_file.path)
+    @logger.debug? && @logger.debug("Queue for upload", :path => temp_file.path)
 
     # if the queue is full the calling thread will be used to upload
     temp_file.close # make sure the content is on disk
@@ -379,7 +385,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   end
 
   def clean_temporary_file(file)
-    @logger.debug("Removing temporary file", :file => file.path)
+    @logger.debug? && @logger.debug("Removing temporary file", :path => file.path)
     file.delete!
   end
 
@@ -389,16 +395,48 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
     @crash_uploader = Uploader.new(bucket_resource, @logger, CRASH_RECOVERY_THREADPOOL)
 
     temp_folder_path = Pathname.new(@temporary_directory)
-    Dir.glob(::File.join(@temporary_directory, "**/*"))
-      .select { |file| ::File.file?(file) }
-      .each do |file|
-      temp_file = TemporaryFile.create_from_existing_file(file, temp_folder_path)
-      if temp_file.size > 0
-        @logger.debug("Recovering from crash and uploading", :file => temp_file.path)
-        @crash_uploader.upload_async(temp_file, :on_complete => method(:clean_temporary_file), :upload_options => upload_options)
+    files = Dir.glob(::File.join(@temporary_directory, "**/*"))
+               .select { |file_path| ::File.file?(file_path) }
+    under_recovery_files = get_under_recovery_files(files)
+
+    files.each do |file_path|
+      # when encoding is GZIP, if file is already recovering or recovered and uploading to S3, log and skip
+      if under_recovery_files.include?(file_path)
+        unless file_path.include?(TemporaryFile.gzip_extension)
+          @logger.warn("The #{file_path} file either under recover process or failed to recover before.")
+        end
       else
-        clean_temporary_file(temp_file)
+        temp_file = TemporaryFile.create_from_existing_file(file_path, temp_folder_path)
+        # do not remove or upload if Logstash tries to recover file but fails
+        if temp_file.recoverable?
+          if temp_file.size > 0
+            @logger.debug? && @logger.debug("Recovering from crash and uploading", :path => temp_file.path)
+            @crash_uploader.upload_async(temp_file,
+                                         :on_complete => method(:clean_temporary_file),
+                                         :upload_options => upload_options)
+          else
+            clean_temporary_file(temp_file)
+          end
+        end
       end
     end
+  end
+
+  # figures out the recovering files and
+  # creates a skip list to ignore for the rest of processes
+  def get_under_recovery_files(files)
+    skip_files = Set.new
+    return skip_files unless @encoding == GZIP_ENCODING
+
+    files.each do |file_path|
+      if file_path.include?(TemporaryFile.recovery_file_name_tag)
+        skip_files << file_path
+        if file_path.include?(TemporaryFile.gzip_extension)
+          # also include the original corrupted gzip file
+          skip_files << file_path.gsub(TemporaryFile.recovery_file_name_tag, "")
+        end
+      end
+    end
+    skip_files
   end
 end
