@@ -8,7 +8,7 @@ require "thread"
 
 Thread.abort_on_exception = true
 
-describe "LogStash::Inputs::SQS integrations", :integration => true do
+describe "LogStash::Inputs::SQS integration", :integration => true do
   let(:decoded_message) { { "drstrange" => "is-he-really-that-strange" } }
   let(:encoded_message) { LogStash::Json.dump(decoded_message) }
   let(:queue) { Queue.new }

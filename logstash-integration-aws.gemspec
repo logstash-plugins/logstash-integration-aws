@@ -1,6 +1,8 @@
+INTEGRATION_AWS_VERSION = File.read(File.expand_path(File.join(File.dirname(__FILE__), "VERSION"))).strip unless defined?(INTEGRATION_AWS_VERSION)
+
 Gem::Specification.new do |s|
   s.name            = "logstash-integration-aws"
-  s.version         = "7.1.0"
+  s.version         = INTEGRATION_AWS_VERSION
   s.licenses        = ["Apache-2.0"]
   s.summary         = "Collection of Logstash plugins that integrate with AWS"
   s.description     = "This gem is a Logstash plugin required to be installed on top of the Logstash core pipeline using $LS_HOME/bin/logstash-plugin install gemname. This gem is not a stand-alone program"
