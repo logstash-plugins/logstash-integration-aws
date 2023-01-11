@@ -1,0 +1,10 @@
+.rakeTasks
+.idea/*
+*.iml
+*.DS_Store
+vendor/
+.bundle/
+build/
+.idea
+.gradle
+lib/logstash-integration-aws_jars.rb
