@@ -137,15 +137,15 @@ class LogStash::Inputs::SQS < LogStash::Inputs::Threadable
     decoded_attributes = {}
     attributes.each do |name, definition|
       case definition.data_type
-      when "String"
-        attribute_value = definition.string_value
-      when "Binary"
-        attribute_value = definition.binary_value
-      when "Number"
-        attribute_value = BigDecimal.new(definition.string_value)
-      else
-        raise 'Unsupported SQS Message attribute data type'
-      end
+        when "String"
+          attribute_value = definition.string_value
+        when "Binary"
+          attribute_value = definition.binary_value
+        when "Number"
+          attribute_value = BigDecimal.new(definition.string_value)
+        else
+          raise 'Unsupported SQS Message attribute data type'
+        end
       decoded_attributes[name] = attribute_value
     end
     return decoded_attributes
