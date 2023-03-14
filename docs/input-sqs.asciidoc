@@ -102,6 +102,7 @@ This plugin supports the following configuration options plus the <<plugins-{typ
 | <<plugins-{type}s-{plugin}-sent_timestamp_field>> |<<string,string>>|No
 | <<plugins-{type}s-{plugin}-session_token>> |<<string,string>>|No
 | <<plugins-{type}s-{plugin}-threads>> |<<number,number>>|No
+| <<plugins-{type}s-{plugin}-user_attributes_field>> |<<string,string>>|No
 |=======================================================================
 
 Also see <<plugins-{type}s-{plugin}-common-options>> for a list of options supported by all
@@ -277,6 +278,13 @@ The AWS Session token for temporary credential
   * Value type is <<number,number>>
   * Default value is `1`
 
+[id="plugins-{type}s-{plugin}-user_attributes_field"]
+===== `user_attributes_field`
+
+  * Value type is <<string,string>>
+  * Default value is `"user_attributes"`
+
+Name of the event field in which to store the SQS message User Attributes
 
 
 
