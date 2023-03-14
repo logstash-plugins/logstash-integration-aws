@@ -1,3 +1,6 @@
+## 7.1.1
+  - Add support for SQS message user attributes
+
 ## 7.1.0
   - Plugin restores and uploads corrupted GZIP files (caused by abnormal termination) to AWS S3 [#20](https://github.com/logstash-plugins/logstash-integration-aws/pull/20)
 
