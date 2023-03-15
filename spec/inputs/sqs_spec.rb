@@ -22,7 +22,7 @@ describe LogStash::Inputs::SQS do
 
   let(:input) { LogStash::Inputs::SQS.new(config) }
   let(:decoded_message) { { "bonjour" => "awesome" }  }
-  let(:encoded_message)  { double("sqs_message", :body => LogStash::Json::dump(decoded_message)) }
+  let(:encoded_message)  { double("sqs_message", :body => LogStash::Json::dump(decoded_message), :message_attributes => {}) }
 
   subject { input }
 
@@ -110,8 +110,8 @@ describe LogStash::Inputs::SQS do
 
         # We have to make sure we create a bunch of events
         # so we actually really try to stop the plugin.
-        # 
-        # rspec's `and_yield` allow you to define a fix amount of possible 
+        #
+        # rspec's `and_yield` allow you to define a fix amount of possible
         # yielded values and doesn't allow you to create infinite loop.
         # And since we are actually creating thread we need to make sure
         # we have enough work to keep the thread working until we kill it..
@@ -136,14 +136,16 @@ describe LogStash::Inputs::SQS do
       let(:md5_of_body) { "dr strange" }
       let(:sent_timestamp) { LogStash::Timestamp.new }
       let(:epoch_timestamp) { (sent_timestamp.utc.to_f * 1000).to_i }
+      let(:message_attributes) { }
 
       let(:id_field) { "my_id_field" }
       let(:md5_field) { "my_md5_field" }
       let(:sent_timestamp_field) { "my_sent_timestamp_field" }
+      let(:user_attributes_field) { "my_user_attributes_field" }
 
       let(:message) do
-        double("message", :message_id => message_id, :md5_of_body => md5_of_body, :attributes => { LogStash::Inputs::SQS::SENT_TIMESTAMP  => epoch_timestamp } )
-      end 
+        double("message", :message_id => message_id, :md5_of_body => md5_of_body, :attributes => { LogStash::Inputs::SQS::SENT_TIMESTAMP  => epoch_timestamp }, :message_attributes => message_attributes )
+      end
 
       subject { input.add_sqs_data(event, message) }
 
@@ -156,7 +158,8 @@ describe LogStash::Inputs::SQS do
             "queue" => queue_name,
             "id_field" => id_field,
             "md5_field" => md5_field,
-            "sent_timestamp_field" => sent_timestamp_field
+            "sent_timestamp_field" => sent_timestamp_field,
+            "user_attributes_field" => user_attributes_field
           }
         end
 
@@ -198,7 +201,7 @@ describe LogStash::Inputs::SQS do
     end
 
     context "receiving messages" do
-      before do 
+      before do
         expect(subject).to receive(:poller).and_return(mock_sqs).at_least(:once)
       end
 
@@ -235,7 +238,7 @@ describe LogStash::Inputs::SQS do
         it "retry to fetch messages" do
           # change the poller implementation to raise SQS errors.
           had_error = false
-          
+
           # actually using the child of `Object` to do an expectation of `#sleep`
           expect(subject).to receive(:sleep).with(LogStash::Inputs::SQS::BACKOFF_SLEEP_TIME)
           expect(mock_sqs).to receive(:poll).with(anything()).at_most(2) do
