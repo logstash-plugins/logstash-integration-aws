@@ -55,7 +55,7 @@ describe LogStash::Outputs::SQS do
     context 'with a nonexistent queue' do
       before do
         expect(Aws::SQS::Client).to receive(:new).and_return(sqs)
-        expect(sqs).to receive(:get_queue_url).with(:queue_name => queue_name) do
+        expect(sqs).to receive(:get_queue_url).with({:queue_name => queue_name}) do
           raise Aws::SQS::Errors::NonExistentQueue.new(nil, 'The specified queue does not exist for this wsdl version.')
         end
       end
@@ -68,7 +68,7 @@ describe LogStash::Outputs::SQS do
     context 'with a valid queue' do
       before do
         expect(Aws::SQS::Client).to receive(:new).and_return(sqs)
-        expect(sqs).to receive(:get_queue_url).with(:queue_name => queue_name).and_return(:queue_url => queue_url)
+        expect(sqs).to receive(:get_queue_url).with({:queue_name => queue_name}).and_return({:queue_url => queue_url})
       end
 
       it 'does not raise an error' do
@@ -80,7 +80,7 @@ describe LogStash::Outputs::SQS do
   describe '#multi_receive_encoded' do
     before do
       expect(Aws::SQS::Client).to receive(:new).and_return(sqs)
-      expect(sqs).to receive(:get_queue_url).with(:queue_name => queue_name).and_return(:queue_url => queue_url)
+      expect(sqs).to receive(:get_queue_url).with({:queue_name => queue_name}).and_return({:queue_url => queue_url})
       subject.register
     end
 
