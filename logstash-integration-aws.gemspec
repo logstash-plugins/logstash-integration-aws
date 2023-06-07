@@ -37,6 +37,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "logstash-codec-plain"
   s.add_runtime_dependency "rufus-scheduler", ">= 3.0.9"
   s.add_runtime_dependency "stud", "~> 0.0.22"
+  s.add_runtime_dependency "rexml"
   s.add_runtime_dependency "aws-sdk-core", "~> 3"
   s.add_runtime_dependency "aws-sdk-s3"
   s.add_runtime_dependency "aws-sdk-sqs"
