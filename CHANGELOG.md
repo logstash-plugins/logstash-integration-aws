@@ -1,3 +1,6 @@
+## 7.1.2
+  - Fix: adaptations to run with JRuby 9.4 [#29](https://github.com/logstash-plugins/logstash-integration-aws/pull/29)
+
 ## 7.1.1
   - Fix: Plugin cannot load Java dependencies [#24](https://github.com/logstash-plugins/logstash-integration-aws/pull/24)
 
