@@ -217,7 +217,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
       raise LogStash::ConfigurationError, "The S3 plugin must have at least one of time_file or size_file set to a value greater than 0"
     end
 
-    @file_repository = FileRepository.new(@tags, @encoding, @temporary_directory)
+    @file_repository = FileRepository.new(@tags, @encoding, @temporary_directory, @logger)
 
     @rotation = rotation_strategy
 
@@ -387,6 +387,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   def clean_temporary_file(file)
     @logger.debug? && @logger.debug("Removing temporary file", :path => file.path)
     file.delete!
+    @file_repository.stop_tracking_temp_file(file.prefix, file)
   end
 
   # The upload process will use a separate uploader/threadpool with less resource allocated to it.
