@@ -126,6 +126,7 @@ This plugin supports the following configuration options plus the <<plugins-{typ
 | <<plugins-{type}s-{plugin}-session_token>> |<<string,string>>|No
 | <<plugins-{type}s-{plugin}-statistics>> |<<array,array>>|No
 | <<plugins-{type}s-{plugin}-use_ssl>> |<<boolean,boolean>>|No
+| <<plugins-{type}s-{plugin}-use_aws_bundled_ca>> |<<boolean,boolean>>|No
 |=======================================================================
 
 Also see <<plugins-{type}s-{plugin}-common-options>> for a list of options supported by all
@@ -312,6 +313,15 @@ require 'aws-sdk' will load v2 classes.
 Should we require (true) or disable (false) using SSL for communicating with the AWS API
 The AWS SDK for Ruby defaults to SSL so we preserve that
 
+[id="plugins-{type}s-{plugin}-use_aws_bundled_ca"]
+===== `use_aws_bundled_ca`
+
+* Value type is <<boolean,boolean>>
+* Default value is `false`
+
+Use bundled ca certs that ships with AWS SDK to verify SSL peer certificates.
+For cases where the default cert is unavailable, e.g. Windows,
+you can set this to `true`.
 
 
 [id="plugins-{type}s-{plugin}-common-options"]
