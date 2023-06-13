@@ -35,6 +35,8 @@ module LogStash::PluginMixins::AwsConfig::V2
       opts = symbolize_keys_and_cast_true_false(additional_settings).merge(opts)
     end
 
+    Aws.use_bundled_cert! if @use_aws_bundled_ca
+
     return opts
   end
 
