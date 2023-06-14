@@ -160,7 +160,7 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
       let(:settings) { { 'use_aws_bundled_ca' => true } }
 
       it 'points ssl_ca_bundle to aws-sdk-core certs' do
-        expect(subject[:ssl_ca_bundle]).to match /aws-sdk-core.*ca-bundle\.crt/
+        expect(subject[:ssl_ca_bundle]).to match /aws-sdk-core.*ca-bundle\.crt\z/
       end
     end
 
