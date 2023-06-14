@@ -338,8 +338,8 @@ Set the directory where logstash will store the tmp files before processing them
 * Value type is <<boolean,boolean>>
 * Default value is `false`
 
-Use bundled ca certs that ships with AWS SDK to verify SSL peer certificates.
-For cases where the default cert is unavailable, e.g. Windows,
+Use bundled CA certificates that ship with AWS SDK to verify SSL peer certificates.
+For cases where the default certificates are unavailable, e.g. Windows,
 you can set this to `true`.
 
 [id="plugins-{type}s-{plugin}-watch_for_new_files"]

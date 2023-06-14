@@ -241,8 +241,8 @@ The AWS Session token for temporary credential
 * Value type is <<boolean,boolean>>
 * Default value is `false`
 
-Use bundled ca certs that ships with AWS SDK to verify SSL peer certificates.
-For cases where the default cert is unavailable, e.g. Windows,
+Use bundled CA certificates that ship with AWS SDK to verify SSL peer certificates.
+For cases where the default certificates are unavailable, e.g. Windows,
 you can set this to `true`.
 
 [id="plugins-{type}s-{plugin}-common-options"]
