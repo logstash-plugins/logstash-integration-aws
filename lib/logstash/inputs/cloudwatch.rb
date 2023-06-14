@@ -130,8 +130,6 @@ class LogStash::Inputs::CloudWatch < LogStash::Inputs::Base
     raise 'Interval must be divisible by period' unless @interval % @period == 0
     raise "Filters must be defined for when using #{@namespace} namespace" if @filters.nil? && filters_required?(@namespace)
 
-    setup_aws_client_config
-
     @last_check = Time.now
   end # def register
 

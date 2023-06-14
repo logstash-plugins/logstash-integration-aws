@@ -1,3 +1,6 @@
+## 7.1.4
+  - Fix `use_aws_bundled_ca` to use bundled ca certs per plugin level instead of global
+
 ## 7.1.3
   - Added an option `use_aws_bundled_ca` to use bundled ca certs that ships with AWS SDK to verify SSL peer certificates [#32](https://github.com/logstash-plugins/logstash-integration-aws/pull/32)
 

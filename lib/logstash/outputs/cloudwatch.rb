@@ -163,7 +163,6 @@ class LogStash::Outputs::CloudWatch < LogStash::Outputs::Base
     require "thread"
     require "aws-sdk-cloudwatch"
 
-    setup_aws_client_config
     @cw = Aws::CloudWatch::Client.new(aws_options_hash)
 
     @event_queue = SizedQueue.new(@queue_size)

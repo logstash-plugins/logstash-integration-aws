@@ -100,7 +100,6 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
 
     @logger.info("Registering", :bucket => @bucket, :region => @region)
 
-    setup_aws_client_config
     s3 = get_s3object
 
     @s3bucket = s3.bucket(@bucket)
