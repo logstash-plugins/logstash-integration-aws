@@ -1,3 +1,6 @@
+## 7.1.3
+  - Added an option `use_aws_bundled_ca` to use bundled ca certs that ships with AWS SDK to verify SSL peer certificates [#32](https://github.com/logstash-plugins/logstash-integration-aws/pull/32)
+
 ## 7.1.2
   - Fix: adaptations to run with JRuby 9.4 [#29](https://github.com/logstash-plugins/logstash-integration-aws/pull/29)
 

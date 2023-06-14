@@ -38,6 +38,10 @@ module LogStash::PluginMixins::AwsConfig::V2
     return opts
   end
 
+  def setup_aws_client_config
+    Aws.use_bundled_cert! if @use_aws_bundled_ca
+  end
+
   private
 
   def aws_credentials

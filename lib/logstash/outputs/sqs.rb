@@ -86,6 +86,7 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
 
   public
   def register
+    setup_aws_client_config
     @sqs = Aws::SQS::Client.new(aws_options_hash)
 
     if @batch_events > 10

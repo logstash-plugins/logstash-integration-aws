@@ -50,5 +50,12 @@ module LogStash::PluginMixins::AwsConfig::Generic
     # ----------------------------------
     #
     config :aws_credentials_file, :validate => :string
+
+    # By default, this plugin uses cert available to OpenSSL provided by OS
+    # when verifying SSL peer certificates.
+    # For cases where the default cert is unavailable, e.g. Windows,
+    # you can use the bundled ca certificate provided by AWS SDK
+    # by setting `use_aws_bundled_ca` to true
+    config :use_aws_bundled_ca, :validate => :boolean, :default => false
   end
 end

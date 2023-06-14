@@ -97,6 +97,7 @@ This plugin supports the following configuration options plus the <<plugins-{typ
 | <<plugins-{type}s-{plugin}-role_session_name>> |<<string,string>>|No
 | <<plugins-{type}s-{plugin}-secret_access_key>> |<<string,string>>|No
 | <<plugins-{type}s-{plugin}-session_token>> |<<string,string>>|No
+| <<plugins-{type}s-{plugin}-use_aws_bundled_ca>> |<<boolean,boolean>>|No
 |=======================================================================
 
 Also see <<plugins-{type}s-{plugin}-common-options>> for a list of options supported by all
@@ -234,7 +235,15 @@ The AWS Secret Access Key
 
 The AWS Session token for temporary credential
 
+[id="plugins-{type}s-{plugin}-use_aws_bundled_ca"]
+===== `use_aws_bundled_ca`
 
+* Value type is <<boolean,boolean>>
+* Default value is `false`
+
+Use bundled CA certificates that ship with AWS SDK to verify SSL peer certificates.
+For cases where the default certificates are unavailable, e.g. Windows,
+you can set this to `true`.
 
 [id="plugins-{type}s-{plugin}-common-options"]
 include::{include_path}/{type}.asciidoc[]
