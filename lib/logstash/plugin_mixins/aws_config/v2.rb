@@ -35,11 +35,14 @@ module LogStash::PluginMixins::AwsConfig::V2
       opts = symbolize_keys_and_cast_true_false(additional_settings).merge(opts)
     end
 
-    return opts
-  end
+    if @use_aws_bundled_ca
+      aws_core_library = Gem.loaded_specs['aws-sdk-core']&.full_gem_path or fail("AWS Core library not available")
+      opts[:ssl_ca_bundle] = File.expand_path('ca-bundle.crt', aws_core_library).tap do |aws_core_ca_bundle|
+        fail("AWS Core CA bundle not found") unless File.exists?(aws_core_ca_bundle)
+      end
+    end
 
-  def setup_aws_client_config
-    Aws.use_bundled_cert! if @use_aws_bundled_ca
+    return opts
   end
 
   private

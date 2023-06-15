@@ -99,7 +99,6 @@ class LogStash::Inputs::SQS < LogStash::Inputs::Threadable
     require "aws-sdk-sqs"
     @logger.info("Registering SQS input", :queue => @queue, :queue_owner_aws_account_id => @queue_owner_aws_account_id)
 
-    setup_aws_client_config
     setup_queue
   end
 
