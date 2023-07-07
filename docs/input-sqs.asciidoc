@@ -131,7 +131,7 @@ This plugin uses the AWS SDK and supports several ways to get credentials, which
 * Default value is `{}`
 
 Key-value pairs of settings and corresponding values used to parametrize
-the connection to SQS. See full list in https://docs.aws.amazon.com/sdk-for-ruby/v2/api/Aws/SQS/Client.html[the AWS SDK documentation]. Example:
+the connection to SQS. See full list in https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/SQS/Client.html[the AWS SDK documentation]. Example:
 
 [source,ruby]
     input {
