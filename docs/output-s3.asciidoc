@@ -143,7 +143,7 @@ This plugin uses the AWS SDK and supports several ways to get credentials, which
   * Default value is `{}`
 
 Key-value pairs of settings and corresponding values used to parametrize
-the connection to S3. See full list in https://docs.aws.amazon.com/sdkforruby/api/Aws/S3/Client.html[the AWS SDK documentation]. Example:
+the connection to S3. See full list in https://docs.aws.amazon.com/sdk-for-ruby/v3/api/Aws/S3/Client.html[the AWS SDK documentation]. Example:
 
 [source,ruby]
     output {

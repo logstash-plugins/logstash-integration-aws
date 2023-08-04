@@ -1,3 +1,6 @@
+## 7.1.5
+  - Fix external documentation links [#35](https://github.com/logstash-plugins/logstash-integration-aws/pull/35)
+
 ## 7.1.4
   - Fix `use_aws_bundled_ca` to use bundled ca certs per plugin level instead of global [#33](https://github.com/logstash-plugins/logstash-integration-aws/pull/33)
 
