@@ -395,8 +395,9 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
     @crash_uploader = Uploader.new(bucket_resource, @logger, CRASH_RECOVERY_THREADPOOL)
 
     temp_folder_path = Pathname.new(@temporary_directory)
-    files = Dir.glob(::File.join(@temporary_directory, "**/*"))
-               .select { |file_path| ::File.file?(file_path) }
+    all_files = Dir.glob(::File.join(@temporary_directory, "**/*"))
+    removed_dirs = remove_empty_dirs(all_files)
+    files = all_files.select { |file_path| !removed_dirs.include?(file_path) && ::File.file?(file_path) }
     under_recovery_files = get_under_recovery_files(files)
 
     files.each do |file_path|
@@ -438,5 +439,20 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
       end
     end
     skip_files
+  end
+
+  # Sorts explored files in desc order
+  # And proceeds bottom-up traversal remove operation if dir is empty
+  # Returns removed set to avoid duplicate Dir.glob process
+  def remove_empty_dirs(files)
+    removed_dirs = Set.new
+    files.sort { |x, y| y.length - x.length } # make sure to remove from leaf node
+         .select { |path| ::File.directory?(path) }
+         .select { |path| (Dir.entries(path) - %w[ . .. ]).empty? } # current and parent dirs escape
+         .each do |path|
+            Dir.rmdir(path)
+            removed_dirs << path
+         end
+    removed_dirs
   end
 end
