@@ -229,4 +229,31 @@ describe LogStash::Outputs::S3 do
       end
     end
   end
+
+  context "remove empty dirs" do
+
+    before do
+      allow(File).to receive(:directory?).with('/path/to/bar-empty').and_return(true)
+      allow(File).to receive(:directory?).with('/path/to/foo/empty-dir').and_return(true)
+      allow(File).to receive(:directory?).with('/path/to/foo-file').and_return(true)
+      allow(File).to receive(:directory?).with('/path/to/foo-file/file.tmp').and_return(false)
+
+      allow(Dir).to receive(:entries).with('/path/to/bar-empty').and_return([])
+      allow(Dir).to receive(:entries).with('/path/to/foo/empty-dir').and_return(%w(. ..))
+      allow(Dir).to receive(:entries).with('/path/to/foo-file').and_return(%w(/path/to/foo-file/file.tmp))
+    end
+
+    it "removes empty dirs" do
+      # Dir.glob() discovered files
+      files = %w(/path/to/bar-empty /path/to/foo/empty-dir /path/to/foo-file/file.tmp /path/to/foo-file)
+      removed_dirs = subject.send(:remove_empty_dirs, files)
+
+      expect(removed_dirs.include?('/path/to/bar-empty')).to be_truthy
+      expect(removed_dirs.include?('/path/to/foo/empty-dir')).to be_truthy
+      expect(removed_dirs.include?('/path/to/foo-file')).to be_falsey
+      expect(removed_dirs.include?('/path/to/foo-file/file.tmp')).to be_falsey
+    end
+
+  end
+
 end
