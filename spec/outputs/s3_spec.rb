@@ -253,7 +253,6 @@ describe LogStash::Outputs::S3 do
       expect(removed_dirs.include?('/path/to/foo-file')).to be_falsey
       expect(removed_dirs.include?('/path/to/foo-file/file.tmp')).to be_falsey
     end
-
   end
 
 end
