@@ -450,6 +450,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
          .select { |path| ::File.directory?(path) }
          .select { |path| (Dir.entries(path) - %w[ . .. ]).empty? } # current and parent dirs escape
          .each do |path|
+            @logger.debug? && @logger.debug("Removing empty temporary file", :path => path)
             FileUtils.rm_rf(path, :secure => true)
             removed_dirs << path
          end

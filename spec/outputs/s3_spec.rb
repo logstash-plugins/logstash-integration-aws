@@ -237,10 +237,12 @@ describe LogStash::Outputs::S3 do
       allow(File).to receive(:directory?).with('/path/to/foo/empty-dir').and_return(true)
       allow(File).to receive(:directory?).with('/path/to/foo-file').and_return(true)
       allow(File).to receive(:directory?).with('/path/to/foo-file/file.tmp').and_return(false)
+      allow(File).to receive(:directory?).with('/path/to/foo').and_return(true)
 
       allow(Dir).to receive(:entries).with('/path/to/bar-empty').and_return([])
       allow(Dir).to receive(:entries).with('/path/to/foo/empty-dir').and_return(%w(. ..))
       allow(Dir).to receive(:entries).with('/path/to/foo-file').and_return(%w(/path/to/foo-file/file.tmp))
+      allow(Dir).to receive(:entries).with('/path/to/foo').and_return(%w(. .. empty-dir))
     end
 
     it "removes empty dirs" do
@@ -252,6 +254,7 @@ describe LogStash::Outputs::S3 do
       expect(removed_dirs.include?('/path/to/foo/empty-dir')).to be_truthy
       expect(removed_dirs.include?('/path/to/foo-file')).to be_falsey
       expect(removed_dirs.include?('/path/to/foo-file/file.tmp')).to be_falsey
+      expect(removed_dirs.include?('/path/to/foo')).to be_falsey     
     end
   end
 
