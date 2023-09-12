@@ -1,3 +1,6 @@
+## 7.1.6
+  - Clean up plugin created temporary dirs at startup [#39](https://github.com/logstash-plugins/logstash-integration-aws/pull/39)
+
 ## 7.1.5
   - Fix external documentation links [#35](https://github.com/logstash-plugins/logstash-integration-aws/pull/35)
 
