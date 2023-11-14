@@ -1,5 +1,20 @@
+## 7.1.6
+  - Clean up plugin created temporary dirs at startup [#39](https://github.com/logstash-plugins/logstash-integration-aws/pull/39)
+
+## 7.1.5
+  - Fix external documentation links [#35](https://github.com/logstash-plugins/logstash-integration-aws/pull/35)
+
+## 7.1.4
+  - Fix `use_aws_bundled_ca` to use bundled ca certs per plugin level instead of global [#33](https://github.com/logstash-plugins/logstash-integration-aws/pull/33)
+
+## 7.1.3
+  - Added an option `use_aws_bundled_ca` to use bundled ca certs that ships with AWS SDK to verify SSL peer certificates [#32](https://github.com/logstash-plugins/logstash-integration-aws/pull/32)
+
+## 7.1.2
+  - Fix: adaptations to run with JRuby 9.4 [#29](https://github.com/logstash-plugins/logstash-integration-aws/pull/29)
+
 ## 7.1.1
-  - Add support for SQS message user attributes
+  - Fix: Plugin cannot load Java dependencies [#24](https://github.com/logstash-plugins/logstash-integration-aws/pull/24)
 
 ## 7.1.0
   - Plugin restores and uploads corrupted GZIP files (caused by abnormal termination) to AWS S3 [#20](https://github.com/logstash-plugins/logstash-integration-aws/pull/20)

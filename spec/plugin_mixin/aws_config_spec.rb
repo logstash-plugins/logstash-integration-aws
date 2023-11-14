@@ -152,6 +152,25 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
 
       end
     end
+
+  end
+
+  describe 'use aws bundled ca' do
+    context 'set to true' do
+      let(:settings) { { 'use_aws_bundled_ca' => true } }
+
+      it 'points ssl_ca_bundle to aws-sdk-core certs' do
+        expect(subject[:ssl_ca_bundle]).to match /aws-sdk-core.*ca-bundle\.crt\z/
+      end
+    end
+
+    context 'set to false' do
+      let(:settings) { { 'use_aws_bundled_ca' => false } }
+
+      it 'does not include the AWS bundled CA' do
+        expect(subject).to_not include :ssl_ca_bundle
+      end
+    end
   end
 
   describe 'config proxy' do
