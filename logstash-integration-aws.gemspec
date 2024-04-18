@@ -40,7 +40,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "rexml"
   s.add_runtime_dependency "aws-sdk-core", "~> 3"
   s.add_runtime_dependency "aws-sdk-s3"
-  s.add_runtime_dependency "aws-sdk-sqs", "~> 1.65.0"
+  s.add_runtime_dependency "aws-sdk-sqs"
   s.add_runtime_dependency "aws-sdk-sns"
   s.add_runtime_dependency "aws-sdk-cloudwatch"
   s.add_runtime_dependency "aws-sdk-cloudfront"
