@@ -23,10 +23,11 @@ module LogStash
 
         attr_reader :fd
 
-        def initialize(key, fd, temp_path)
+        def initialize(key, fd, temp_path, prefix)
           @fd = fd
           @key = key
           @temp_path = temp_path
+          @prefix = prefix
           @created_at = Time.now
         end
 
@@ -53,6 +54,10 @@ module LogStash
 
         def key
           @key.gsub(/^\//, "")
+        end
+
+        def prefix
+          @prefix
         end
 
         # Each temporary file is created inside a directory named with an UUID,
@@ -82,7 +87,7 @@ module LogStash
           end
           TemporaryFile.new(key_parts.slice(1, key_parts.size).join("/"),
                             ::File.exist?(file_path) ? ::File.open(file_path, "r") : nil, # for the nil case, file size will be 0 and upload will be ignored.
-                            ::File.join(temporary_folder, key_parts.slice(0, 1)))
+                            ::File.join(temporary_folder, key_parts.slice(0, 1)), "")
         end
 
         def self.gzip_extension

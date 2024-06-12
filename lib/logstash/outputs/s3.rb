@@ -87,7 +87,9 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   include LogStash::PluginMixins::AwsConfig::V2
 
   PREFIX_KEY_NORMALIZE_CHARACTER = "_"
-  PERIODIC_CHECK_INTERVAL_IN_SECONDS = 15
+  PERIODIC_FILE_ROTATOR_INTERVAL_IN_SECONDS = 15
+  PERIODIC_STALE_SWEEPER_INTERVAL_IN_SECONDS = 60
+
   CRASH_RECOVERY_THREADPOOL = Concurrent::ThreadPoolExecutor.new({
                                                                    :min_threads => 1,
                                                                    :max_threads => 2,
@@ -114,7 +116,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
 
   # Set the time, in MINUTES, to close the current sub_time_section of bucket.
   # If you also define file_size you have a number of files related to the section and the current tag.
-  # If it's valued 0 and rotation_strategy is 'time' or 'size_and_time' then the plugin reaise a configuration error.
+  # If it's valued 0 and rotation_strategy is 'time' or 'size_and_time' then the plugin raise a configuration error.
   config :time_file, :validate => :number, :default => 15
 
   # If `restore => false` is specified and Logstash crashes, the unprocessed files are not sent into the bucket.
@@ -186,7 +188,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   config :rotation_strategy, :validate => ["size_and_time", "size", "time"], :default => "size_and_time"
 
   # The common use case is to define permission on the root bucket and give Logstash full access to write its logs.
-  # In some circonstances you need finer grained permission on subfolder, this allow you to disable the check at startup.
+  # In some circumstances you need finer grained permission on subfolder, this allow you to disable the check at startup.
   config :validate_credentials_on_root_bucket, :validate => :boolean, :default => true
 
   # The number of times to retry a failed S3 upload.
@@ -217,7 +219,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
       raise LogStash::ConfigurationError, "The S3 plugin must have at least one of time_file or size_file set to a value greater than 0"
     end
 
-    @file_repository = FileRepository.new(@tags, @encoding, @temporary_directory)
+    @file_repository = FileRepository.new(@tags, @encoding, @temporary_directory, @logger)
 
     @rotation = rotation_strategy
 
@@ -234,7 +236,9 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
 
     # If we need time based rotation we need to do periodic check on the file
     # to take care of file that were not updated recently
-    start_periodic_check if @rotation.needs_periodic?
+    start_periodic_file_rotator if @rotation.needs_periodic?
+
+    start_periodic_stale_sweeper
   end
 
   def multi_receive_encoded(events_and_encoded)
@@ -259,11 +263,10 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   end
 
   def close
-    stop_periodic_check if @rotation.needs_periodic?
+    stop_periodic_file_rotator if @rotation.needs_periodic?
+    stop_periodic_stale_sweeper # stop periodic stale sweeps
 
     @logger.debug("Uploading current workspace")
-
-    @file_repository.shutdown # stop stale sweeps
 
     # The plugin has stopped receiving new events, but we still have
     # data on disk, lets make sure it get to S3.
@@ -319,21 +322,40 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   end
 
   private
-  # We start a task in the background for check for stale files and make sure we rotate them to S3 if needed.
-  def start_periodic_check
-    @logger.debug("Start periodic rotation check")
+  # We start a task in the background to check at periodic cadence for file rotation.
+  # Rotated files are uploaded to S3 if their size > 0.
+  # Rotated files with size == 0 will be swept by stale sweeper.
+  def start_periodic_file_rotator
+    @logger.debug("Start periodic file rotation check")
 
-    @periodic_check = Concurrent::TimerTask.new(:execution_interval => PERIODIC_CHECK_INTERVAL_IN_SECONDS) do
-      @logger.debug("Periodic check for stale files")
+    @periodic_file_rotator = Concurrent::TimerTask.new(:execution_interval => PERIODIC_FILE_ROTATOR_INTERVAL_IN_SECONDS) do
+      @logger.debug("Periodic check for file rotation")
 
       rotate_if_needed(@file_repository.keys)
     end
 
-    @periodic_check.execute
+    @periodic_file_rotator.execute
   end
 
-  def stop_periodic_check
-    @periodic_check.shutdown
+  def start_periodic_stale_sweeper
+    @periodic_stale_sweeper = Concurrent::TimerTask.new(:execution_interval => PERIODIC_STALE_SWEEPER_INTERVAL_IN_SECONDS) do
+      LogStash::Util.set_thread_name("S3, Stale factory sweeper")
+
+      @logger.debug("Periodic stale sweeper check started.")
+      @file_repository.keys.each do | prefix_key |
+        @file_repository.remove_if_stale(prefix_key)
+      end
+    end
+
+    @periodic_stale_sweeper.execute
+  end
+
+  def stop_periodic_file_rotator
+    @periodic_file_rotator.shutdown
+  end
+
+  def stop_periodic_stale_sweeper
+    @periodic_stale_sweeper.shutdown
   end
 
   def bucket_resource
@@ -387,6 +409,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   def clean_temporary_file(file)
     @logger.debug? && @logger.debug("Removing temporary file", :path => file.path)
     file.delete!
+    @file_repository.stop_tracking_temp_file(file.prefix, file)
   end
 
   # The upload process will use a separate uploader/threadpool with less resource allocated to it.

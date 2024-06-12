@@ -21,7 +21,7 @@ module LogStash
         FILE_MODE = "a"
         STRFTIME = "%Y-%m-%dT%H.%M"
 
-        attr_accessor :counter, :tags, :prefix, :encoding, :temporary_directory, :current
+        attr_accessor :counter, :tags, :prefix, :encoding, :temporary_directory, :current, :temp_files
 
         def initialize(prefix, tags, encoding, temporary_directory)
           @counter = 0
@@ -31,6 +31,7 @@ module LogStash
           @encoding = encoding
           @temporary_directory = temporary_directory
           @lock = Mutex.new
+          @temp_files = Array.new
 
           rotate!
         end
@@ -38,6 +39,7 @@ module LogStash
         def rotate!
           @lock.synchronize {
             @current = new_file
+            @temp_files.push(@current)
             increment_counter
             @current
           }
@@ -86,7 +88,7 @@ module LogStash
                  ::File.open(::File.join(path, key), FILE_MODE)
                end
 
-          TemporaryFile.new(key, io, path)
+          TemporaryFile.new(key, io, path, prefix)
         end
 
         class IOWrappedGzip
