@@ -370,6 +370,10 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
       @uploader.upload_async(temp_file,
                              :on_complete => method(:clean_temporary_file),
                              :upload_options => upload_options )
+    else
+      # this mostly happens when plugin is being closed but created an empty file
+      # note that file rotation considers the size
+      clean_temporary_file(temp_file)
     end
   end
 

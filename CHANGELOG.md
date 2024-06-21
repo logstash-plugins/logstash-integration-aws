@@ -1,3 +1,6 @@
+## 7.1.7
+  - Remove empty temporary dirs at plugin close [#46](https://github.com/logstash-plugins/logstash-integration-aws/pull/46)
+
 ## 7.1.6
   - Clean up plugin created temporary dirs at startup [#39](https://github.com/logstash-plugins/logstash-integration-aws/pull/39)
 
