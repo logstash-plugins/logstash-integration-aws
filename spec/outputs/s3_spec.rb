@@ -258,4 +258,25 @@ describe LogStash::Outputs::S3 do
     end
   end
 
+  context "plugin close" do
+    let(:temporary_directory) { Stud::Temporary.pathname }
+    let(:options) { super().merge({ 'temporary_directory' => temporary_directory, 'rotation_strategy' => 'time', 'time_file' => 0.1 }) }
+
+    before do
+      allow(subject).to receive(:bucket_resource).and_return(mock_bucket)
+    end
+
+    it "removes empty directory" do
+      subject.register
+      expect(Dir.exist?(temporary_directory)).to be_truthy
+
+      subject.multi_receive_encoded(events_and_encoded) # creates a temporary dir
+      expect((Dir.entries(temporary_directory) - %w{ . .. }).empty?).to be_falsey
+
+      sleep(20) # let file rotation happen and leave new empty dir
+      subject.close
+      expect((Dir.entries(temporary_directory) - %w{ . .. }).empty?).to be_truthy
+    end
+  end
+
 end
