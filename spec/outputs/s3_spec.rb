@@ -260,7 +260,7 @@ describe LogStash::Outputs::S3 do
 
   context "plugin close" do
     let(:temporary_directory) { Stud::Temporary.pathname }
-    let(:options) { super().merge({ 'temporary_directory' => temporary_directory, 'rotation_strategy' => 'time', 'time_file' => 0.1 }) }
+    let(:options) { super().merge({ 'temporary_directory' => temporary_directory, 'rotation_strategy' => 'time', 'time_file' => 0.01 }) }
 
     before do
       allow(subject).to receive(:bucket_resource).and_return(mock_bucket)
@@ -273,7 +273,7 @@ describe LogStash::Outputs::S3 do
       subject.multi_receive_encoded(events_and_encoded) # creates a temporary dir
       expect((Dir.entries(temporary_directory) - %w{ . .. }).empty?).to be_falsey
 
-      sleep(20) # let file rotation happen and leave new empty dir
+      subject.instance_variable_get(:@periodic_check).execute
       subject.close
       expect((Dir.entries(temporary_directory) - %w{ . .. }).empty?).to be_truthy
     end

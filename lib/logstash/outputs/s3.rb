@@ -272,7 +272,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
     # This will block the shutdown until all upload are done or the use force quit.
     @file_repository.each_files do |file|
       upload_file(file)
-      clean_temporary_file(file) if file.size == 0
+      clean_temporary_file(file) if Dir.exist?(file.temp_path) && file.size == 0
     end
 
     @uploader.stop # wait until all the current upload are complete
