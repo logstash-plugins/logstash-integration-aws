@@ -114,7 +114,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
 
   # Set the time, in MINUTES, to close the current sub_time_section of bucket.
   # If you also define file_size you have a number of files related to the section and the current tag.
-  # If it's valued 0 and rotation_strategy is 'time' or 'size_and_time' then the plugin reaise a configuration error.
+  # If it's valued 0 and rotation_strategy is 'time' or 'size_and_time' then the plugin raises a configuration error.
   config :time_file, :validate => :number, :default => 15
 
   # If `restore => false` is specified and Logstash crashes, the unprocessed files are not sent into the bucket.
@@ -186,7 +186,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
   config :rotation_strategy, :validate => ["size_and_time", "size", "time"], :default => "size_and_time"
 
   # The common use case is to define permission on the root bucket and give Logstash full access to write its logs.
-  # In some circonstances you need finer grained permission on subfolder, this allow you to disable the check at startup.
+  # In some circumstances you need finer grained permission on sub folder, this allow you to disable the check at startup.
   config :validate_credentials_on_root_bucket, :validate => :boolean, :default => true
 
   # The number of times to retry a failed S3 upload.
@@ -272,6 +272,7 @@ class LogStash::Outputs::S3 < LogStash::Outputs::Base
     # This will block the shutdown until all upload are done or the use force quit.
     @file_repository.each_files do |file|
       upload_file(file)
+      clean_temporary_file(file) if Dir.exist?(file.temp_path) && file.size == 0
     end
 
     @uploader.stop # wait until all the current upload are complete
