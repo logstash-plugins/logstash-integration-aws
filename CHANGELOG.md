@@ -1,3 +1,6 @@
+## 7.1.8
+  - adding all supported storage classes for s3 output [#49](https://github.com/logstash-plugins/logstash-integration-aws/pull/49)
+
 ## 7.1.7
   - Remove empty temporary dirs at plugin close [#46](https://github.com/logstash-plugins/logstash-integration-aws/pull/46)
 
