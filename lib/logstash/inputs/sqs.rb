@@ -90,6 +90,9 @@ class LogStash::Inputs::SQS < LogStash::Inputs::Threadable
   # Name of the event field in which to store the SQS message Sent Timestamp
   config :sent_timestamp_field, :validate => :string
 
+  # Name of the event field in which to store the SQS message User Attributes
+  config :user_attributes_field, :validate => :string, :default => "user_attributes"
+
   # Polling frequency, default is 20 seconds
   config :polling_frequency, :validate => :number, :default => DEFAULT_POLLING_FREQUENCY
 
@@ -122,18 +125,37 @@ class LogStash::Inputs::SQS < LogStash::Inputs::Threadable
   end
 
   def polling_options
-    { 
+    {
       :max_number_of_messages => MAX_MESSAGES_TO_FETCH,
       :attribute_names => SQS_ATTRIBUTES,
       :wait_time_seconds => @polling_frequency
     }
   end
 
+  def decode_sqs_user_attributes(attributes)
+    @logger.debug("Decoding user attributes", :user_attributes => attributes)
+    decoded_attributes = {}
+    attributes.each do |name, definition|
+      case definition.data_type
+        when "String"
+          attribute_value = definition.string_value
+        when "Binary"
+          attribute_value = definition.binary_value
+        when "Number"
+          attribute_value = BigDecimal.new(definition.string_value)
+        else
+          raise 'Unsupported SQS Message attribute data type'
+        end
+      decoded_attributes[name] = attribute_value
+    end
+    return decoded_attributes
+  end
+
   def add_sqs_data(event, message)
     event.set(@id_field, message.message_id) if @id_field
     event.set(@md5_field, message.md5_of_body) if @md5_field
     event.set(@sent_timestamp_field, convert_epoch_to_timestamp(message.attributes[SENT_TIMESTAMP])) if @sent_timestamp_field
-    event
+    event.set(@user_attributes_field, decode_sqs_user_attributes(message.message_attributes)) if !message.message_attributes.nil?
   end
 
   def handle_message(message, output_queue)
