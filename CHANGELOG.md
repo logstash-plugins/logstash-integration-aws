@@ -1,3 +1,6 @@
+## 7.2.0
+  - Added an option `web_identity_token_file` to support IRSA (IAM Roles for Service Accounts)
+  
 ## 7.1.8
   - adding all supported storage classes for s3 output [#49](https://github.com/logstash-plugins/logstash-integration-aws/pull/49)
 
