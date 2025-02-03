@@ -57,5 +57,10 @@ module LogStash::PluginMixins::AwsConfig::Generic
     # you can use the bundled ca certificate provided by AWS SDK
     # by setting `use_aws_bundled_ca` to true
     config :use_aws_bundled_ca, :validate => :boolean, :default => false
+
+    # Absolute path to the file on disk containing OIDC token for IRSA
+    # By default, AMZ EKS project the token to "/var/run/secrets/eks.amazonaws.com/serviceaccount/token"
+    # `role_arn` must be configured when `web_identity_token_file` is used
+    config :web_identity_token_file, :validate => :string
   end
 end

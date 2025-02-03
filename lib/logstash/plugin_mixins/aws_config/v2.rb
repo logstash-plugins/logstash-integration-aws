@@ -2,9 +2,18 @@
 require "logstash/plugin_mixins/aws_config/generic"
 
 module LogStash::PluginMixins::AwsConfig::V2
+  module RegisterInterceptor
+    # check aws config before plugin.register()
+    def register
+      check_aws_generic_config!
+      super
+    end
+  end
+
   def self.included(base)
     base.extend(self)
     base.send(:include, LogStash::PluginMixins::AwsConfig::Generic)
+    base.prepend(RegisterInterceptor)
   end
 
   public
@@ -67,19 +76,24 @@ module LogStash::PluginMixins::AwsConfig::V2
   alias credentials aws_credentials
 
   def assume_role(opts = {})
-    unless opts.key?(:credentials)
-      credentials = aws_credentials
-      opts[:credentials] = credentials if credentials
-    end
+    creds = aws_credentials
+    opts[:credentials] = creds if creds
 
     # for a regional endpoint :region is always required by AWS
     opts[:region] = @region
 
-    Aws::AssumeRoleCredentials.new(
-        :client => Aws::STS::Client.new(opts),
-        :role_arn => @role_arn,
-        :role_session_name => @role_session_name
-    )
+    role_credentials_opts = {
+      client: Aws::STS::Client.new(opts),
+      role_arn: @role_arn,
+      role_session_name: @role_session_name
+    }
+
+    if @web_identity_token_file
+      role_credentials_opts[:web_identity_token_file] = @web_identity_token_file
+      Aws::AssumeRoleWebIdentityCredentials.new(role_credentials_opts)
+    else
+      Aws::AssumeRoleCredentials.new(role_credentials_opts)
+    end
   end
 
   def symbolize_keys_and_cast_true_false(hash)
@@ -97,4 +111,7 @@ module LogStash::PluginMixins::AwsConfig::V2
     end
   end
 
+  def check_aws_generic_config!
+    raise LogStash::ConfigurationError, "`role_arn` must be set when using `web_identity_token_file`" if @web_identity_token_file && (@role_arn.nil? || @role_arn.empty?)
+  end
 end
