@@ -59,7 +59,8 @@ module LogStash::PluginMixins::AwsConfig::Generic
     config :use_aws_bundled_ca, :validate => :boolean, :default => false
 
     # Absolute path to the file on disk containing OIDC token for IRSA
-    # By default, AMZ EKS project the token to "/var/run/secrets/eks.amazonaws.com/serviceaccount/token"
+    # In AWS EKS, this should be set to "/var/run/secrets/eks.amazonaws.com/serviceaccount/token",
+    # the default location where EKS projects the token.
     # `role_arn` must be configured when `web_identity_token_file` is used
     config :web_identity_token_file, :validate => :string
   end
