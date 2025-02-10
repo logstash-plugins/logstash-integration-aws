@@ -6,6 +6,7 @@ require 'timecop'
 class DummyInputAwsConfigV2 < LogStash::Inputs::Base
   include LogStash::PluginMixins::AwsConfig::V2
 
+  def register; end
   def aws_service_endpoint(region)
     { :dummy_input_aws_config_region => "#{region}.awswebservice.local" }
   end
@@ -13,6 +14,7 @@ end
 
 class DummyInputAwsConfigV2NoRegionMethod < LogStash::Inputs::Base
   include LogStash::PluginMixins::AwsConfig::V2
+  def register; end
 end
 
 describe LogStash::PluginMixins::AwsConfig::V2 do
@@ -87,6 +89,7 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
               new_temp_credentials
             end
           }
+          allow_any_instance_of(Aws::AssumeRoleCredentials).to receive(:parse_account_id).with(any_args).and_return(nil)
         end
 
         it 'supports passing role_arn' do
@@ -230,6 +233,26 @@ describe LogStash::PluginMixins::AwsConfig::V2 do
     let(:settings) { {} }
     it 'should always return a hash' do
       expect(subject).to eq({ :dummy_input_aws_config_region => "us-east-1.awswebservice.local" })  
+    end
+  end
+
+  describe "validate config" do
+    context "setup IRSA" do
+      let(:settings) { {"web_identity_token_file" => "/path/to/token_file"} }
+
+      context "web_identity_token_file and role_arn are set" do
+        let(:settings) { super().merge("role_arn" => 'arn:aws:iam::111122223333:role/a-role',) }
+
+        it "passes validation" do
+          expect{ DummyInputAwsConfigV2.new(settings).register }.to_not raise_error
+        end
+      end
+
+      context "only web_identity_token_file is set" do
+        it "fails validation" do
+          expect{ DummyInputAwsConfigV2.new(settings).register }.to raise_error(LogStash::ConfigurationError, /`role_arn` must be set/)
+        end
+      end
     end
   end
 
