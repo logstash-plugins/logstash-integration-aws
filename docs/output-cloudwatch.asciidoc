@@ -334,7 +334,7 @@ Absolute path to the file on disk containing OIDC token for https://docs.aws.ama
 Set the path to `"/var/run/secrets/eks.amazonaws.com/serviceaccount/token"` when using Amazon EKS.
 If specified, <<plugins-{type}s-{plugin}-role_arn>> must not be empty.
 
-For the details of setting up IAM roles and Kubernetes service accounts, check out https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html[https://docs.aws.amazon.com/eks/latest/userguide/pod-configuration.html[userguide]
+For the details of setting up IAM roles and Kubernetes service accounts, check out https://docs.aws.amazon.com/eks/latest/userguide/associate-service-account-role.html[userguide]
 
 
 [id="plugins-{type}s-{plugin}-common-options"]
