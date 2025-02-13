@@ -1,5 +1,5 @@
 ## 7.2.1
-  - [Doc] remove broken links in SNS and CloudWatch [#54](https://github.com/logstash-plugins/logstash-integration-aws/pull/54)
+  - [DOC] Remove unneeded content and links in SNS and CloudWatch [#54](https://github.com/logstash-plugins/logstash-integration-aws/pull/54)
 
 ## 7.2.0
   - Added an option `web_identity_token_file` to support IRSA (IAM Roles for Service Accounts) [#52](https://github.com/logstash-plugins/logstash-integration-aws/pull/52)
