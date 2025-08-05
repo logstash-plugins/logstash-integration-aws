@@ -86,7 +86,10 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
   # default to an expression that matches *.gz and *.gzip file extensions
   config :gzip_pattern, :validate => :string, :default => "\.gz(ip)?$"
 
-  CUTOFF_SECOND = 3
+  # The time window in seconds used to filter recently modified S3 objects.
+  # Objects modified within this cutoff period may be skipped.
+  # Value is in seconds.
+  config :cutoff_second, :validate => :number, :default => 3
 
   def initialize(*params)
     super
@@ -147,7 +150,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
           @logger.debug('Object Zero Length', :key => log.key)
         elsif log.last_modified <= sincedb_time
           @logger.debug('Object Not Modified', :key => log.key)
-        elsif log.last_modified > (current_time - CUTOFF_SECOND).utc # file modified within last two seconds will be processed in next cycle
+        elsif log.last_modified > (current_time - @cutoff_second).utc # file modified within last two seconds will be processed in next cycle
           @logger.debug('Object Modified After Cutoff Time', :key => log.key)
         elsif (log.storage_class == 'GLACIER' || log.storage_class == 'DEEP_ARCHIVE') && !file_restored?(log.object)
           @logger.debug('Object Archived to Glacier', :key => log.key)
