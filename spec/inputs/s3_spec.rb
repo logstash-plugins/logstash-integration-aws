@@ -23,7 +23,7 @@ describe LogStash::Inputs::S3 do
       "sincedb_path" => File.join(sincedb_path, ".sincedb")
     }
   }
-  let(:cutoff) { LogStash::Inputs::S3::CUTOFF_SECOND }
+  let(:cutoff) { 3 }
 
 
   before do
