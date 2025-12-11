@@ -84,6 +84,9 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
   # need to be configured on both accounts to function.
   config :queue_owner_aws_account_id, :validate => :string, :required => false
 
+  # Message Group ID for messages sent to queues.
+  config :message_group_id, :validate => :string, :required => false
+
   public
   def register
     @sqs = Aws::SQS::Client.new(aws_options_hash)
@@ -154,7 +157,10 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
         @logger.warn('Message exceeds maximum length and will be dropped', :message_size => encoded.bytesize)
         next
       end
-
+      if @message_group_id
+        @sqs.send_message(:queue_url => @queue_url, :message_body => encoded, :message_group_id => @message_group_id)
+        next
+      end
       @sqs.send_message(:queue_url => @queue_url, :message_body => encoded)
     end
   end
@@ -162,6 +168,11 @@ class LogStash::Outputs::SQS < LogStash::Outputs::Base
   private
   def send_message_batch(entries)
     @logger.debug("Publishing #{entries.size} messages to SQS", :queue_url => @queue_url, :entries => entries)
+    if @message_group_id
+      entries.each do |entry|
+        entry[:message_group_id] = @message_group_id
+      end
+    end
     @sqs.send_message_batch(:queue_url => @queue_url, :entries => entries)
   end
 end
