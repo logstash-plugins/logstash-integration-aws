@@ -185,8 +185,8 @@ The name of the S3 bucket.
   * Value type is <<number,number>>
   * Default value is `3`
 
-The time window in seconds used to filter recently modified S3 objects. 
-Objects modified within this cutoff period may be skipped.
+The time window used to detect recently modified S3 objects. 
+Objects modified within this cutoff period will be processed the next time the file list is checked (relates to <<plugins-{type}s-{plugin}-interval>>).
 Value is in seconds.
 
 [id="plugins-{type}s-{plugin}-delete"]
