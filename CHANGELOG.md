@@ -1,3 +1,6 @@
+## 7.3.1
+  - Re-packaging the plugin [#63](https://github.com/logstash-plugins/logstash-integration-aws/pull/63)
+
 ## 7.3.0
   - Add cutoff_second configuration option to S3 input plugin [#59](https://github.com/logstash-plugins/logstash-integration-aws/pull/59)
 
