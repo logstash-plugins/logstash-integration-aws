@@ -1,3 +1,6 @@
+## 7.3.2
+  - Fix: replace deprecated `File.exists?` with `File.exist?` for Ruby 3.4 (JRuby 10) compatibility [#65](https://github.com/logstash-plugins/logstash-integration-aws/pull/65)
+
 ## 7.3.1
   - Re-packaging the plugin [#63](https://github.com/logstash-plugins/logstash-integration-aws/pull/63)
 
