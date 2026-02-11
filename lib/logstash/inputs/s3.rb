@@ -117,7 +117,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
     end
 
     unless @backup_to_dir.nil?
-      Dir.mkdir(@backup_to_dir, 0700) unless File.exists?(@backup_to_dir)
+      Dir.mkdir(@backup_to_dir, 0700) unless File.exist?(@backup_to_dir)
     end
 
     FileUtils.mkdir_p(@temporary_directory) unless Dir.exist?(@temporary_directory)
@@ -451,7 +451,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
 
       # @return [Time]
       def read
-        if ::File.exists?(@sincedb_path)
+        if ::File.exist?(@sincedb_path)
           content = ::File.read(@sincedb_path).chomp.strip
           # If the file was created but we didn't have the time to write to it
           return content.empty? ? Time.new(0) : Time.parse(content)
