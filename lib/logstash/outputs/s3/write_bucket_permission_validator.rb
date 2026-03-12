@@ -2,6 +2,7 @@
 require "stud/temporary"
 require "socket"
 require "fileutils"
+require "aws-sdk-s3"
 
 module LogStash
   module Outputs
