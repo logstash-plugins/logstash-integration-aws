@@ -43,26 +43,22 @@ describe LogStash::Outputs::S3::Uploader do
   end
 
   it "retries errors indefinitely" do
-    s3 = double("s3").as_null_object
-
-    allow(bucket).to receive(:object).with(file.key).and_return(s3)
+    tm = subject.instance_variable_get(:@transfer_manager)
 
     expect(logger).to receive(:warn).with(any_args)
-    expect(s3).to receive(:upload_file).with(any_args).and_raise(RuntimeError.new('UPLOAD FAILED')).exactly(5).times
-    expect(s3).to receive(:upload_file).with(any_args).and_return(true)
+    expect(tm).to receive(:upload_file).with(file.path, hash_including(bucket: bucket_name, key: file.key)).and_raise(RuntimeError.new('UPLOAD FAILED')).exactly(5).times
+    expect(tm).to receive(:upload_file).with(file.path, hash_including(bucket: bucket_name, key: file.key)).and_return(true)
 
     subject.upload(file)
   end
 
   it "retries errors specified times" do
     subject = described_class.new(bucket, logger, threadpool, retry_count: 3, retry_delay: 0.01)
-    s3 = double("s3").as_null_object
-
-    allow(bucket).to receive(:object).with(file.key).and_return(s3)
+    tm = subject.instance_variable_get(:@transfer_manager)
 
     expect(logger).to receive(:warn).with(any_args).exactly(3).times
     expect(logger).to receive(:error).with(any_args).once
-    expect(s3).to receive(:upload_file).with(file.path, {}).and_raise(RuntimeError).at_least(1).times
+    expect(tm).to receive(:upload_file).with(file.path, hash_including(bucket: bucket_name, key: file.key)).and_raise(RuntimeError).at_least(1).times
 
     subject.upload(file)
   end

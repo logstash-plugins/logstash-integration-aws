@@ -2,6 +2,7 @@
 require "stud/temporary"
 require "socket"
 require "fileutils"
+require "aws-sdk-s3"
 
 module LogStash
   module Outputs
@@ -39,11 +40,11 @@ module LogStash
             f.write(content)
             f.fsync
 
-            obj = bucket_resource.object(key)
-            obj.upload_file(f, upload_options)
+            transfer_manager = Aws::S3::TransferManager.new(client: bucket_resource.client)
+            transfer_manager.upload_file(f.path, bucket: bucket_resource.name, key: key, **upload_options)
 
             begin
-              obj.delete
+              bucket_resource.object(key).delete
             rescue
               # Try to remove the files on the remote bucket,
               # but don't raise any errors if that doesn't work.
