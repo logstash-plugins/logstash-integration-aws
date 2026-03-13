@@ -412,28 +412,14 @@ describe LogStash::Inputs::S3 do
 
     context "when event doesn't have a `message` field" do
       let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'json.log') }
-      let(:config) {
-        {
-          "access_key_id" => "1234",
-          "secret_access_key" => "secret",
-          "bucket" => "logstash-test",
-          "codec" => "json",
-        }
-      }
+      let(:config) { super().merge({ "codec" => "json" }) }
 
       include_examples "generated events"
     end
 
     context "when event does have a `message` field" do
       let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'json_with_message.log') }
-      let(:config) {
-        {
-          "access_key_id" => "1234",
-          "secret_access_key" => "secret",
-          "bucket" => "logstash-test",
-          "codec" => "json",
-        }
-      }
+      let(:config) { super().merge({ "codec" => "json" }) }
 
       include_examples "generated events"
     end
@@ -476,14 +462,11 @@ describe LogStash::Inputs::S3 do
 
     context 'multi-line' do
       let(:log_file) { File.join(File.dirname(__FILE__), '..', 'fixtures', 'multiline.log') }
-       let(:config) {
-           {
-              "access_key_id" => "1234",
-              "secret_access_key" => "secret",
-              "bucket" => "logstash-test",
-              "codec" => LogStash::Codecs::Multiline.new( {"pattern" => "__SEPARATOR__", "negate" => "true",  "what" => "previous"})
-           }
-        }
+      let(:config) {
+        super().merge({
+          "codec" => LogStash::Codecs::Multiline.new( {"pattern" => "__SEPARATOR__", "negate" => "true",  "what" => "previous"})
+        })
+      }
 
       include_examples "generated events"
     end
