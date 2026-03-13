@@ -1,5 +1,5 @@
 ## 7.3.4
-  - timestamp precision mismatch causing S3 input to skip backup and delete operations [#60](https://github.com/logstash-plugins/logstash-integration-aws/pull/60)
+  - Use milliseconds timestamp precision in S3 input to fix the skip backup and delete object issue in S3-compatible storage services [#60](https://github.com/logstash-plugins/logstash-integration-aws/pull/60)
     
 ## 7.3.3
   - Replace deprecated `Aws::S3::Object#upload_file` in favor of `Aws::S3::TransferManager#upload_file` [#67](https://github.com/logstash-plugins/logstash-integration-aws/pull/67)
