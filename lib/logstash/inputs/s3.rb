@@ -86,7 +86,10 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
   # default to an expression that matches *.gz and *.gzip file extensions
   config :gzip_pattern, :validate => :string, :default => "\.gz(ip)?$"
 
-  CUTOFF_SECOND = 3
+  # The time window used to detect recently modified S3 objects.
+  # Objects modified within this cutoff period will be processed the next time the file list is checked (relates to interval).
+  # Value is in seconds.
+  config :cutoff_second, :validate => :number, :default => 3
 
   def initialize(*params)
     super
@@ -114,7 +117,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
     end
 
     unless @backup_to_dir.nil?
-      Dir.mkdir(@backup_to_dir, 0700) unless File.exists?(@backup_to_dir)
+      Dir.mkdir(@backup_to_dir, 0700) unless File.exist?(@backup_to_dir)
     end
 
     FileUtils.mkdir_p(@temporary_directory) unless Dir.exist?(@temporary_directory)
@@ -147,7 +150,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
           @logger.debug('Object Zero Length', :key => log.key)
         elsif log.last_modified.to_i <= sincedb_time.to_i
           @logger.debug('Object Not Modified', :key => log.key)
-        elsif log.last_modified > (current_time - CUTOFF_SECOND).utc # file modified within last two seconds will be processed in next cycle
+        elsif log.last_modified > (current_time - @cutoff_second).utc # recently modified files will be processed in next cycle
           @logger.debug('Object Modified After Cutoff Time', :key => log.key)
         elsif (log.storage_class == 'GLACIER' || log.storage_class == 'DEEP_ARCHIVE') && !file_restored?(log.object)
           @logger.debug('Object Archived to Glacier', :key => log.key)
@@ -448,7 +451,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
 
       # @return [Time]
       def read
-        if ::File.exists?(@sincedb_path)
+        if ::File.exist?(@sincedb_path)
           content = ::File.read(@sincedb_path).chomp.strip
           # If the file was created but we didn't have the time to write to it
           return content.empty? ? Time.new(0) : Time.parse(content)

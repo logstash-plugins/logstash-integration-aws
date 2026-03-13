@@ -1,6 +1,6 @@
 # encoding: utf-8
 require "logstash/util"
-require "aws-sdk-core"
+require "aws-sdk-s3"
 
 module LogStash
   module Outputs
@@ -18,6 +18,7 @@ module LogStash
 
         def initialize(bucket, logger, threadpool = DEFAULT_THREADPOOL, retry_count: Float::INFINITY, retry_delay: 1)
           @bucket = bucket
+          @transfer_manager = Aws::S3::TransferManager.new(client: bucket.client)
           @workers_pool = threadpool
           @logger = logger
           @retry_count = retry_count
@@ -37,8 +38,7 @@ module LogStash
 
           tries = 0
           begin
-            obj = bucket.object(file.key)
-            obj.upload_file(file.path, upload_options)
+            @transfer_manager.upload_file(file.path, bucket: bucket.name, key: file.key, **upload_options)
           rescue Errno::ENOENT => e
             logger.error("File doesn't exist! Unrecoverable error.", :exception => e.class, :message => e.message, :path => file.path, :backtrace => e.backtrace)
           rescue => e

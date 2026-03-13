@@ -1,3 +1,15 @@
+## 7.3.3
+  - Replace deprecated `Aws::S3::Object#upload_file` in favor of `Aws::S3::TransferManager#upload_file` [#67](https://github.com/logstash-plugins/logstash-integration-aws/pull/67)
+
+## 7.3.2
+  - Fix: replace deprecated `File.exists?` with `File.exist?` for Ruby 3.4 (JRuby 10) compatibility [#65](https://github.com/logstash-plugins/logstash-integration-aws/pull/65)
+
+## 7.3.1
+  - Re-packaging the plugin [#63](https://github.com/logstash-plugins/logstash-integration-aws/pull/63)
+
+## 7.3.0
+  - Add cutoff_second configuration option to S3 input plugin [#59](https://github.com/logstash-plugins/logstash-integration-aws/pull/59)
+
 ## 7.2.1
   - [DOC] Remove unneeded content and links in SNS and CloudWatch [#54](https://github.com/logstash-plugins/logstash-integration-aws/pull/54)
 

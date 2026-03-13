@@ -23,7 +23,7 @@ describe LogStash::Inputs::S3 do
       "sincedb_path" => File.join(sincedb_path, ".sincedb")
     }
   }
-  let(:cutoff) { LogStash::Inputs::S3::CUTOFF_SECOND }
+  let(:cutoff) { 4 }
 
 
   before do
@@ -314,7 +314,7 @@ describe LogStash::Inputs::S3 do
 
           plugin.backup_to_dir(source_file)
 
-          expect(File.exists?(backup_file)).to eq(true)
+          expect(File.exist?(backup_file)).to eq(true)
         end
       end
     end
