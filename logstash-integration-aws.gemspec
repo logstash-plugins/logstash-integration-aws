@@ -22,7 +22,8 @@ Gem::Specification.new do |s|
       logstash-output-cloudwatch
       logstash-output-s3
       logstash-output-sns
-      logstash-output-sqs).join(",")
+      logstash-output-sqs
+      logstash-output-firehose).join(",")
   }
 
 
@@ -45,6 +46,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency "aws-sdk-cloudwatch"
   s.add_runtime_dependency "aws-sdk-cloudfront"
   s.add_runtime_dependency "aws-sdk-resourcegroups"
+  s.add_runtime_dependency "aws-sdk-firehose"
 
   s.add_development_dependency "logstash-codec-json_lines"
   s.add_development_dependency "logstash-codec-multiline"
@@ -52,5 +54,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "logstash-codec-line"
   s.add_development_dependency "logstash-devutils"
   s.add_development_dependency "logstash-input-generator"
+  s.add_development_dependency "logstash-mixin-ecs_compatibility_support"
   s.add_development_dependency "timecop"
 end
